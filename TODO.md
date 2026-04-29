@@ -37,8 +37,8 @@
 
 ## Phase 3 — Backend Structure
 
-- [ ] Step 17: Create Services layer (UserService, StatsService)
-- [ ] Step 18: Move logic from controllers into services
+- [x] Step 17: Create Services layer (UserService, StatsService)
+- [x] Step 18: Move logic from controllers into services
 - [ ] Step 19: Add DTOs or simple data structures
 - [ ] Step 20: Add basic error handling (try/catch + logs)
 

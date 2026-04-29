@@ -3,10 +3,28 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Services\StatsService;
 
 class StatsController extends Controller
 {
+    /**
+     * Stats service instance.
+     *
+     * Handles business logic for application statistics.
+     */
+    protected StatsService $statsService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param StatsService $statsService
+     */
+    public function __construct(StatsService $statsService)
+    {
+        $this->statsService = $statsService;
+    }
+
+
     /**
      * Display basic application statistics.
      *
