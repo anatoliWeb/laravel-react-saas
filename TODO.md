@@ -27,11 +27,11 @@
 ## Phase 2 — Laravel Backend (API)
 
 - [x] Step 11: Initialize Laravel project in /backend
-- [ ] Step 12: Configure API routes file
-- [ ] Step 13: Create UsersController (stub)
-- [ ] Step 14: Create StatsController (stub)
-- [ ] Step 15: Add GET /api/users endpoint (mocked data)
-- [ ] Step 16: Add GET /api/stats endpoint (mocked data)
+- [x] Step 12: Configure API routes file
+- [x] Step 13: Create UsersController (stub)
+- [x] Step 14: Create StatsController (stub)
+- [x] Step 15: Add GET /api/users endpoint (mocked data)
+- [x] Step 16: Add GET /api/stats endpoint (mocked data)
 
 ---
 
