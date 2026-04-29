@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Services\UserService;
 
 class UsersController extends Controller
@@ -34,9 +35,25 @@ class UsersController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */    
     public function index() {
-        return response()->json([
-            ['id' => 1, 'name' => 'John Doe'],
-            ['id' => 2, 'name' => 'Jane Doe'],
-        ]);
+        try {
+            $users = $this->userService->getUsers();
+
+            return response()->json(
+                array_map(fn($user) => $user->toArray(), $users)
+            );
+
+        } catch (\Throwable $e) {
+
+            /**
+             * Log unexpected error.
+             */
+            Log::error('Failed to fetch users', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'Internal Server Error'
+            ], 500);
+        }
     }
 }

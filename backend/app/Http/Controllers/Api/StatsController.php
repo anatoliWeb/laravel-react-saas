@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Services\StatsService;
 
 class StatsController extends Controller
@@ -34,9 +35,20 @@ class StatsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-        return response()->json([
-            'users' => 2,
-            'active' => 1,
-        ]);
+        try {
+            $stats = $this->statsService->getStats();
+
+            return response()->json($stats->toArray());
+
+        } catch (\Throwable $e) {
+
+            Log::error('Failed to fetch stats', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'Internal Server Error'
+            ], 500);
+        }
     }
 }

@@ -39,8 +39,8 @@
 
 - [x] Step 17: Create Services layer (UserService, StatsService)
 - [x] Step 18: Move logic from controllers into services
-- [ ] Step 19: Add DTOs or simple data structures
-- [ ] Step 20: Add basic error handling (try/catch + logs)
+- [X] Step 19: Add DTOs or simple data structures
+- [X] Step 20: Add basic error handling (try/catch + logs)
 
 ---
 

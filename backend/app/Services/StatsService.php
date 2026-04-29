@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\DTO\StatsDTO;
+
 class StatsService
 {
     /**
@@ -9,13 +11,10 @@ class StatsService
      *
      * Returns mocked data for dashboard representation.
      *
-     * @return array
+     * @return StatsDTO
      */
-    public function getStats(): array
+    public function getStats(): StatsDTO
     {
-        return [
-            'users' => 2,
-            'active' => 1,
-        ];
+        return new StatsDTO(2, 1);
     }
 }

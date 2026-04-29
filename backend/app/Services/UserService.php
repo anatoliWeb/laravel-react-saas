@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\DTO\UserDTO;
+
 class UserService
 {
     /**
@@ -10,13 +12,13 @@ class UserService
      * This method simulates fetching users from data source.
      * In real application this will interact with database or external services.
      *
-     * @return array
+     * @return array<int, UserDTO>
      */
     public function getUsers(): array
     {
         return [
-            ['id' => 1, 'name' => 'John Doe'],
-            ['id' => 2, 'name' => 'Jane Doe'],
+            new UserDTO(1, 'John Doe'),
+            new UserDTO(2, 'Jane Doe'),
         ];
     }
 }
