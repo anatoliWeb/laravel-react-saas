@@ -6,27 +6,27 @@
 
 ## Phase 0 — Project Initialization
 
-- [ ] Step 1: Create repository and initialize README, TODO.md, .gitignore
-- [ ] Step 2: Define project structure (backend, frontend, docker, docs)
-- [ ] Step 3: Add .editorconfig and basic coding standards
-- [ ] Step 4: Setup initial Git commit with clean structure
+- [x] Step 1: Create repository and initialize README, TODO.md, .gitignore
+- [x] Step 2: Define project structure (backend, frontend, docker, docs)
+- [x] Step 3: Add .editorconfig and basic coding standards
+- [x] Step 4: Setup initial Git commit with clean structure
 
 ---
 
 ## Phase 1 — Docker & Environment
 
-- [ ] Step 5: Create docker-compose.yml (PHP, Nginx, Node)
-- [ ] Step 6: Configure Nginx for Laravel backend
-- [ ] Step 7: Setup Laravel container (PHP-FPM)
-- [ ] Step 8: Setup Node container for React
-- [ ] Step 9: Add .env.example with base config
-- [ ] Step 10: Verify project runs with docker-compose up
+- [x] Step 5: Create docker-compose.yml (PHP, Nginx, Node)
+- [x] Step 6: Configure Nginx for Laravel backend
+- [x] Step 7: Setup Laravel container (PHP-FPM)
+- [x] Step 8: Setup Node container for React
+- [x] Step 9: Add .env.example with base config
+- [x] Step 10: Verify project runs with docker-compose up
 
 ---
 
 ## Phase 2 — Laravel Backend (API)
 
-- [ ] Step 11: Initialize Laravel project in /backend
+- [x] Step 11: Initialize Laravel project in /backend
 - [ ] Step 12: Configure API routes file
 - [ ] Step 13: Create UsersController (stub)
 - [ ] Step 14: Create StatsController (stub)
