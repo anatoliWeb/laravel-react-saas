@@ -13,12 +13,13 @@
     {{-- Sidebar --}}
     <aside class="sidebar">
         <div class="sidebar-logo">MyApp</div>
-
-        <nav class="sidebar-menu">
-            <a href="/admin">Dashboard</a>
-            <a href="/admin/users">Users</a>
-            <a href="/admin/tokens">Tokens</a>
-        </nav>
+        @if(auth()->user()->isAdmin())
+            <nav class="sidebar-menu">
+                <a href="/admin">Dashboard</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/tokens">Tokens</a>
+            </nav>
+        @endif
     </aside>
 
     {{-- Main --}}

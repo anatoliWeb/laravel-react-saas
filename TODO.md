@@ -61,6 +61,7 @@
 - [x] Step 28: Create Users management page (list only)
 - [x] Step 29: Create Token management page
 - [x] Step 30: Add create/delete token functionality
+- [x]          Roles and access control for admin panel
 
 ---
 
