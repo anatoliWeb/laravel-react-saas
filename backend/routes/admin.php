@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 
 /**
  * Admin routes.
@@ -11,3 +12,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('admin.dashboard');
 })->name('admin.dashboard');
+
+/**
+ * Users management routes.
+ */
+Route::get('/users', [UserController::class, 'index'])
+    ->name('admin.users.index');

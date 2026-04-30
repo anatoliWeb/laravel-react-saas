@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Services\UserService;
+use Illuminate\Support\Facades\Log;
+
+/**
+ * Admin users management controller.
+ *
+ * Responsible for displaying users list in admin panel.
+ */
+class UserController extends Controller
+{
+    /**
+     * User service instance.
+     */
+    protected UserService $userService;
+
+    /**
+     * Inject dependencies.
+     *
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+    /**
+     * Display users list.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        try {
+            $users = $this->userService->getUsers();
+
+            return view('admin.users.index', [
+                'users' => $users
+            ]);
+
+        } catch (\Throwable $e) {
+
+            Log::error('Failed to load users for admin', [
+                'error' => $e->getMessage(),
+            ]);
+
+            abort(500);
+        }
+    }
+}

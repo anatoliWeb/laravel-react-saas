@@ -1,0 +1,25 @@
+.page-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    border-bottom: 1px solid #334155;
+    text-align: left;
+    color: #cbd5f5;
+}
+
+.table th {
+    background: #0f172a;
+}
