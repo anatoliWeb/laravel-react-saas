@@ -84,3 +84,16 @@
     font-size: 12px;
     word-break: break-all;
 }
+
+.permissions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.permission-item {
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 6px;
+    color: white;
+}

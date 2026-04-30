@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TokenController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\RoleController;
 
 /**
  * Admin routes.
@@ -42,4 +43,21 @@ Route::middleware(['permission:access_admin'])
         Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
             ->middleware('permission:manage_tokens')
             ->name('tokens.destroy');
+
+        /**
+         * Roles management
+         */
+        Route::get('/roles', [RoleController::class, 'index'])
+            ->middleware('permission:manage_users')
+            ->name('roles.index');
+
+        Route::get('/roles/{id}', [RoleController::class, 'edit'])
+            ->middleware('permission:manage_users')
+            ->name('roles.edit');
+
+        Route::put('/roles/{id}', [RoleController::class, 'update'])
+            ->middleware('permission:manage_users')
+            ->name('roles.update');
+
+
     });
