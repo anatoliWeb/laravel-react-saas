@@ -1,42 +1,38 @@
 @extends('layouts.app')
 
-@section('title', 'Roles')
+@section('title', 'Permissions')
 
 @section('breadcrumbs')
     <x-breadcrumbs :items="[
         ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-        ['label' => 'Roles']
+        ['label' => 'Permissions']
     ]" />
 @endsection
 
 @section('content')
     <header class="page-header">
         <div>
-            <h1 class="page-title">Roles</h1>
-            <p class="page-subtitle">Role definitions and attached permission counts.</p>
+            <h1 class="page-title">Permissions</h1>
+            <p class="page-subtitle">Access control capabilities used by roles and users.</p>
         </div>
-    </header>
 
-    @if(session('success'))
-        <div class="c-alert c-alert--success">{{ session('success') }}</div>
-    @endif
+        <a href="{{ route('admin.permissions.create') }}" class="c-btn c-btn--primary">Add Permission</a>
+    </header>
 
     <section class="c-table-wrap">
         <table class="c-table">
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Permissions</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
-            @foreach($roles as $role)
+            @foreach($permissions as $permission)
                 <tr>
-                    <td>{{ $role->name }}</td>
-                    <td class="c-table__muted">{{ $role->permissions_count }}</td>
+                    <td>{{ $permission->name }}</td>
                     <td class="c-table__actions">
-                        <a href="{{ route('admin.roles.edit', $role->id) }}" class="c-btn c-btn--ghost">Edit</a>
+                        <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="c-btn c-btn--ghost">Edit</a>
                     </td>
                 </tr>
             @endforeach

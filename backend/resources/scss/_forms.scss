@@ -1,0 +1,78 @@
+.c-form {
+  @include panel;
+  padding: $space-2;
+}
+
+.c-form__section + .c-form__section {
+  margin-top: $space-3;
+}
+
+.c-form__title {
+  margin: 0 0 $space-1;
+  font-size: $font-size-lg;
+}
+
+.c-form__hint {
+  margin: 0 0 $space-2;
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+}
+
+.c-form__grid {
+  display: grid;
+  gap: $space-2;
+}
+
+.c-form__group {
+  display: grid;
+  gap: 6px;
+}
+
+.c-form__label {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+.c-form__input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: #0b1220;
+  color: $color-text-primary;
+  font-size: $font-size-md;
+  padding: 10px 12px;
+
+  &:focus {
+    @include focus-ring;
+  }
+}
+
+.c-check-grid {
+  display: grid;
+  gap: $space-1;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.c-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: $radius-sm;
+  border: 1px solid $color-border;
+  background: rgba(11, 18, 32, 0.7);
+  color: $color-text-primary;
+}
+
+.c-check__hint {
+  color: $color-accent;
+  font-size: $font-size-sm;
+}
+
+.c-form__actions {
+  margin-top: $space-3;
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-1;
+}

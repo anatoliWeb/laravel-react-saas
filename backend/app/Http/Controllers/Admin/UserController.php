@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Services\UserService;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 /**
  * Admin users management controller.
@@ -55,28 +57,64 @@ class UserController extends Controller
     }
 
     /**
-     * Edit user roles.
+     * Show user edit form.
+     *
+     * Loads user roles and direct permissions
+     * for editing access control settings.
      */
     public function edit($id)
     {
-        $user = User::with('roles')->findOrFail($id);
-        $roles = Role::all();
+        $user = User::with(['roles', 'permissions'])->findOrFail($id);
 
-        return view('admin.users.edit', compact('user', 'roles'));
+        $roles = Role::all();
+        $permissions = Permission::all();
+
+        return view('admin.users.edit', compact(
+            'user',
+            'roles',
+            'permissions'
+        ));
     }
 
     /**
-     * Update user roles.
+     * Update user data, roles and permissions.
      */
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        // sync roles (replace existing)
-        $user->roles()->sync($request->input('roles', []));
+        /**
+         * Validate input
+         */
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'roles' => ['array'],
+            'roles.*' => ['exists:roles,id'],
+            'permissions' => ['array'],
+            'permissions.*' => ['exists:permissions,id'],
+        ]);
+
+        /**
+         * Update basic info
+         */
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+
+        /**
+         * Sync roles (replace existing)
+         */
+        $user->roles()->sync($validated['roles'] ?? []);
+
+        /**
+         * Sync direct permissions
+         */
+        $user->permissions()->sync($validated['permissions'] ?? []);
 
         return redirect()
             ->route('admin.users.index')
-            ->with('success', 'User roles updated');
+            ->with('success', 'User updated successfully');
     }
 }

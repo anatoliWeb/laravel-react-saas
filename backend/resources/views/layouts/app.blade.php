@@ -2,47 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Admin Panel')</title>
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
 <body>
+<div class="admin-layout" data-admin-layout>
+    @include('layouts.partials.navigation')
 
-<div class="app">
-
-    {{-- Sidebar --}}
-    <aside class="sidebar">
-        <div class="sidebar-logo">MyApp</div>
-        @if(auth()->user()->isAdmin())
-            <nav class="sidebar-menu">
-                <a href="/admin">Dashboard</a>
-                <a href="/admin/users">Users</a>
-                <a href="/admin/tokens">Tokens</a>
-            </nav>
-        @endif
-    </aside>
-
-    {{-- Main --}}
-    <div class="main">
-
-        {{-- Header --}}
-        <header class="header">
-            <div>Admin Panel</div>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit">Logout</button>
-            </form>
-        </header>
-
-        {{-- Content --}}
-        <main class="content">
+    <main class="admin-main">
+        <div class="admin-content">
+            @hasSection('breadcrumbs')
+                @yield('breadcrumbs')
+            @endif
             @yield('content')
-        </main>
-
-    </div>
-
+        </div>
+    </main>
 </div>
 
+@stack('scripts')
 </body>
 </html>

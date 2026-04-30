@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Auth</title>
+    <title>@yield('title', 'Auth')</title>
 
-    {{-- Main styles and scripts --}}
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 </head>
-<body>
+<body class="guest-layout">
 
-<div class="auth-wrapper">
-    {{ $slot }}
-</div>
+<main class="guest-container">
+    @yield('content')
+</main>
 
 </body>
 </html>

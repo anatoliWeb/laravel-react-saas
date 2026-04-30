@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TokenController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
 
 /**
  * Admin routes.
@@ -67,5 +68,10 @@ Route::middleware(['permission:access_admin'])
             ->middleware('permission:manage_users')
             ->name('roles.update');
 
-
+        /**
+         * Permissions management
+         */
+        Route::resource('permissions', PermissionController::class)
+            ->middleware('permission:manage_users')
+            ->names('permissions');
     });

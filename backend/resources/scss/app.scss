@@ -1,18 +1,8 @@
-// Variables
 @import 'variables';
-
-// Layout
+@import 'mixins';
 @import 'layout';
-
-// Components
 @import 'components';
-
+@import 'forms';
+@import 'dashboard';
 @import 'auth';
-
 @import 'landing';
-
-body {
-    font-family: sans-serif;
-    background: #0f172a;
-    color: white;
-}

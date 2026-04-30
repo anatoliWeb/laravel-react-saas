@@ -75,6 +75,22 @@
 - [x] Add demo users with different roles
 - [x] Generate API tokens for testing
 
+### Roles & Permissions UI
+
+- [x] Create roles management page
+- [x] Implement role permissions editor
+- [x] Add permissions CRUD (create/edit/delete)
+- [x] Add user roles & permissions editor
+
+### UI / UX Improvements
+
+- [x] Implement sidebar navigation (grouped + icons)
+- [x] Add active state and permission-based menu visibility
+- [x] Add breadcrumbs component
+- [x] Improve layout structure and spacing
+- [x] Add SCSS design system (variables, components, layout)
+- [x] Add basic JS interactivity (sidebar toggle)
+
 ---
 
 ## Phase 6 — React Frontend

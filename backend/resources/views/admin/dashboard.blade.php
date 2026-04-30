@@ -1,36 +1,57 @@
 @extends('layouts.app')
 
+@section('title', 'Dashboard')
+
+@section('breadcrumbs')
+    <x-breadcrumbs :items="[
+        ['label' => 'Dashboard']
+    ]" />
+@endsection
+
 @section('content')
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Overview of platform activity and access metrics.</p>
+        </div>
+    </header>
 
-    <h1 class="page-title">Dashboard</h1>
+    <section class="dashboard-grid">
+        <article class="c-card c-card--stat">
+            <span class="c-card__label">Total Users</span>
+            <div class="c-card__value">{{ $usersCount }}</div>
+        </article>
 
-    <div class="dashboard-grid">
+        <article class="c-card c-card--stat">
+            <span class="c-card__label">Admins</span>
+            <div class="c-card__value">{{ $adminsCount }}</div>
+        </article>
 
-        <div class="card">
-            <div class="card-title">Total Users</div>
-            <div class="card-value">{{ $usersCount }}</div>
+        <article class="c-card c-card--stat">
+            <span class="c-card__label">Managers</span>
+            <div class="c-card__value">{{ $managersCount }}</div>
+        </article>
+
+        <article class="c-card c-card--stat">
+            <span class="c-card__label">API Tokens</span>
+            <div class="c-card__value">{{ $tokensCount }}</div>
+        </article>
+
+        <article class="c-card c-card--stat">
+            <span class="c-card__label">Users with Direct Permissions</span>
+            <div class="c-card__value">{{ $usersWithDirectPermissions }}</div>
+        </article>
+    </section>
+
+    <section class="dashboard-rail">
+        <div class="dashboard-placeholder">
+            <h2 class="dashboard-placeholder__title">Traffic & Usage</h2>
+            <p class="dashboard-placeholder__text">Chart zone placeholder for upcoming analytics widgets.</p>
         </div>
 
-        <div class="card">
-            <div class="card-title">Admins</div>
-            <div class="card-value">{{ $adminsCount }}</div>
+        <div class="dashboard-placeholder">
+            <h2 class="dashboard-placeholder__title">Recent Activity</h2>
+            <p class="dashboard-placeholder__text">Timeline placeholder for audit and admin events.</p>
         </div>
-
-        <div class="card">
-            <div class="card-title">Managers</div>
-            <div class="card-value">{{ $managersCount }}</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">API Tokens</div>
-            <div class="card-value">{{ $tokensCount }}</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Users with Direct Permissions</div>
-            <div class="card-value">{{ $usersWithDirectPermissions }}</div>
-        </div>
-
-    </div>
-
+    </section>
 @endsection
