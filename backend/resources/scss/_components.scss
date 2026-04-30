@@ -73,3 +73,14 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
+.token-box {
+    display: flex;
+    justify-content: space-between;
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 12px;
+    word-break: break-all;
+}

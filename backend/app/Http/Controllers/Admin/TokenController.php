@@ -38,12 +38,21 @@ class TokenController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|max:255',
+            'abilities' => 'nullable|array'
         ]);
 
-        $token = $request->user()->createToken($request->name);
+        /**
+         * Create token with optional abilities (scopes).
+         */
+        $token = $request->user()->createToken(
+            $request->name,
+            $request->input('abilities', ['*'])
+        );
 
-        return redirect()->back()->with('success', $token->plainTextToken);
+        return redirect()
+            ->back()
+            ->with('token', $token->plainTextToken);
     }
 
     /**

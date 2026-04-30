@@ -59,8 +59,8 @@
 - [x] Step 26: Create /admin route group
 - [x] Step 27: Setup simple admin layout (Blade or Livewire)
 - [x] Step 28: Create Users management page (list only)
-- [ ] Step 29: Create Token management page
-- [ ] Step 30: Add create/delete token functionality
+- [x] Step 29: Create Token management page
+- [x] Step 30: Add create/delete token functionality
 
 ---
 
