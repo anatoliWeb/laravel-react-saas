@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\TokenController;
 
 /**
  * Admin routes.
@@ -11,10 +12,22 @@ use App\Http\Controllers\Admin\UserController;
  */
 Route::get('/', function () {
     return view('admin.dashboard');
-})->name('admin.dashboard');
+})->name('dashboard');
 
 /**
  * Users management routes.
  */
 Route::get('/users', [UserController::class, 'index'])
-    ->name('admin.users.index');
+    ->name('users.index');
+
+/**
+ * Token management routes
+ */
+Route::get('/tokens', [TokenController::class, 'index'])
+    ->name('tokens.index');
+
+Route::post('/tokens', [TokenController::class, 'store'])
+    ->name('tokens.store');
+
+Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
+    ->name('tokens.destroy');
