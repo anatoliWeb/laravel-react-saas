@@ -9,6 +9,12 @@ services:
     working_dir: /var/www/backend
     volumes:
       - ./backend:/var/www/backend
+    command: >
+      sh -c "
+      chown -R www-data:www-data storage bootstrap/cache &&
+      chmod -R 775 storage bootstrap/cache &&
+      php-fpm
+      "
     env_file:
       - .env
     depends_on:

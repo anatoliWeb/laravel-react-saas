@@ -1,3 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// Variables
+@import 'variables';
+
+// Layout
+@import 'layout';
+
+// Components
+@import 'components';
+
+@import 'auth';
+
+body {
+    font-family: sans-serif;
+    background: #0f172a;
+    color: white;
+}

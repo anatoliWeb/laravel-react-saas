@@ -1,0 +1,44 @@
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #0f172a;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar-logo {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.sidebar-menu a {
+    display: block;
+    color: #cbd5f5;
+    margin-bottom: 10px;
+    text-decoration: none;
+}
+
+.sidebar-menu a:hover {
+    color: white;
+}
+
+.main {
+    flex: 1;
+    background: #111827;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: #1f2937;
+    color: white;
+}
+
+.content {
+    padding: 20px;
+}

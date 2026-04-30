@@ -46,17 +46,17 @@
 
 ## Phase 4 — Authentication (Sanctum)
 
-- [ ] Step 21: Install Laravel Sanctum
-- [ ] Step 22: Configure token-based authentication
-- [ ] Step 23: Create endpoint for issuing tokens
-- [ ] Step 24: Protect API routes with auth middleware
-- [ ] Step 25: Test API with Bearer token
+- [x] Step 21: Install Laravel Sanctum
+- [x] Step 22: Configure token-based authentication
+- [x] Step 23: Create endpoint for issuing tokens
+- [x] Step 24: Protect API routes with auth middleware
+- [x] Step 25: Test API with Bearer token
 
 ---
 
 ## Phase 5 — Admin Panel (Laravel)
 
-- [ ] Step 26: Create /admin route group
+- [x] Step 26: Create /admin route group
 - [ ] Step 27: Setup simple admin layout (Blade or Livewire)
 - [ ] Step 28: Create Users management page (list only)
 - [ ] Step 29: Create Token management page
