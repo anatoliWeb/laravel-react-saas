@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web:[ 
+        web:[
             __DIR__.'/../routes/web.php'
         ],
         api: __DIR__.'/../routes/api.php',
@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
          * finishes configuring the default routing system.
          */
         then: function (): void {
-            Route::middleware(['web'])
+            Route::middleware(['web', 'auth'])
                 ->prefix('admin')
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
