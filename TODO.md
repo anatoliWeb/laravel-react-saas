@@ -106,8 +106,8 @@
 
 ## Phase 6 — React Frontend
 
-- [ ] Step 31: Initialize React app (Vite)
-- [ ] Step 32: Setup folder structure (pages, components, services)
+- [x] Step 31: Initialize React app (Vite)
+- [x] Step 32: Setup folder structure (pages, components, services)
 - [ ] Step 33: Create API client (axios/fetch wrapper)
 - [ ] Step 34: Create Dashboard page
 - [ ] Step 35: Fetch /api/stats and display data

@@ -1,0 +1,11 @@
+@use './variables' as v;
+
+@mixin panel {
+  background: v.$color-card;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-lg;
+}
+
+@mixin text-muted {
+  color: v.$color-text-muted;
+}

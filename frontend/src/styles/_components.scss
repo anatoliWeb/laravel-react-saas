@@ -1,0 +1,57 @@
+@use './variables' as v;
+@use './mixins' as m;
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: v.$space-2;
+}
+
+.card {
+  @include m.panel;
+  padding: v.$space-2;
+}
+
+.card-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.card-body p {
+  margin: 0;
+  @include m.text-muted;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  @include m.panel;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid v.$color-border;
+  }
+
+  th {
+    @include m.text-muted;
+    font-weight: 600;
+  }
+}
+
+.loading {
+  @include m.text-muted;
+}
+
+.error-message {
+  color: v.$color-error;
+}
+
+.inline-link {
+  color: v.$color-link;
+}
