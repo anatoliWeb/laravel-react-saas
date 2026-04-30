@@ -5,8 +5,8 @@ namespace App\DTO;
 /**
  * Data Transfer Object for User.
  *
- * This class is used to standardize the structure
- * of user data returned by the service layer.
+ * Defines the structure of user data
+ * passed from service layer to UI/API.
  */
 class UserDTO
 {
@@ -21,29 +21,51 @@ class UserDTO
     public string $name;
 
     /**
+     * User email.
+     */
+    public string $email;
+
+    /**
+     * User roles.
+     *
+     * @var array<int, string>
+     */
+    public array $roles;
+
+    /**
      * Create new UserDTO instance.
      *
      * @param int $id
      * @param string $name
+     * @param string $email
+     * @param array<int, string> $roles
      */
-    public function __construct(int $id, string $name)
-    {
+    public function __construct(
+        int $id,
+        string $name,
+        string $email,
+        array $roles = []
+    ) {
         $this->id = $id;
         $this->name = $name;
+        $this->email = $email;
+        $this->roles = $roles;
     }
 
     /**
      * Convert DTO to array.
      *
-     * Used for JSON responses.
+     * Used for JSON/API responses.
      *
      * @return array<string, mixed>
      */
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'id'    => $this->id,
+            'name'  => $this->name,
+            'email' => $this->email,
+            'roles' => $this->roles,
         ];
     }
 }

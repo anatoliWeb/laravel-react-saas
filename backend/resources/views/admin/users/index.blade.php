@@ -17,6 +17,17 @@
             <tr>
                 <td>{{ $user->id }}</td>
                 <td>{{ $user->name }}</td>
+                <td>{{ $user->email }}</td>
+                <td>
+                    @foreach($user->roles as $role)
+                        <span class="badge">{{ $role }}</span>
+                    @endforeach
+                </td>
+                <td>
+                    <a href="{{ route('admin.users.edit', $user->id) }}">
+                        Edit
+                    </a>
+                </td>
             </tr>
         @endforeach
         </tbody>

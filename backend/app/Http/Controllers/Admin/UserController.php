@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\UserService;
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -50,5 +52,31 @@ class UserController extends Controller
 
             abort(500);
         }
+    }
+
+    /**
+     * Edit user roles.
+     */
+    public function edit($id)
+    {
+        $user = User::with('roles')->findOrFail($id);
+        $roles = Role::all();
+
+        return view('admin.users.edit', compact('user', 'roles'));
+    }
+
+    /**
+     * Update user roles.
+     */
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // sync roles (replace existing)
+        $user->roles()->sync($request->input('roles', []));
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'User roles updated');
     }
 }

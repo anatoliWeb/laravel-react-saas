@@ -2,19 +2,38 @@
 
 namespace App\Services;
 
-use App\DTO\StatsDTO;
+use App\Models\User;
+use App\Models\Role;
+use Laravel\Sanctum\PersonalAccessToken;
 
+/**
+ * Stats service.
+ *
+ * Provides dashboard metrics.
+ */
 class StatsService
 {
     /**
-     * Get application statistics.
+     * Get dashboard statistics.
      *
-     * Returns mocked data for dashboard representation.
-     *
-     * @return StatsDTO
+     * @return array<string, int>
      */
-    public function getStats(): StatsDTO
+    public function getStats(): array
     {
-        return new StatsDTO(2, 1);
+        return [
+            'users_total' => User::count(),
+
+            'admins' => User::whereHas('roles', fn($q) =>
+            $q->where('name', 'admin')
+            )->count(),
+
+            'managers' => User::whereHas('roles', fn($q) =>
+            $q->where('name', 'manager')
+            )->count(),
+
+            'tokens_total' => PersonalAccessToken::count(),
+
+            'users_with_direct_permissions' => User::whereHas('permissions')->count(),
+        ];
     }
 }

@@ -2,23 +2,48 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\DTO\UserDTO;
 
+/**
+ * User service.
+ *
+ * Handles user-related business logic.
+ */
 class UserService
 {
     /**
-     * Get list of users.
-     *
-     * This method simulates fetching users from data source.
-     * In real application this will interact with database or external services.
+     * Get all users as DTO collection.
      *
      * @return array<int, UserDTO>
      */
     public function getUsers(): array
     {
-        return [
-            new UserDTO(1, 'John Doe'),
-            new UserDTO(2, 'Jane Doe'),
-        ];
+        return User::with('roles')
+            ->get()
+            ->map(function ($user) {
+                return new UserDTO(
+                    $user->id,
+                    $user->name,
+                    $user->email,
+                    $user->roles->pluck('name')->toArray()
+                );
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get single user DTO.
+     */
+    public function getUser(int $id): UserDTO
+    {
+        $user = User::with('roles')->findOrFail($id);
+
+        return new UserDTO(
+            $user->id,
+            $user->name,
+            $user->email,
+            $user->roles->pluck('name')->toArray()
+        );
     }
 }

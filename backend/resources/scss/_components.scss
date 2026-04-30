@@ -97,3 +97,25 @@
     border-radius: 6px;
     color: white;
 }
+
+.roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.role-item {
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 6px;
+    color: white;
+}
+
+.badge {
+    display: inline-block;
+    background: #3b82f6;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-right: 5px;
+}

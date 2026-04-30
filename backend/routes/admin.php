@@ -29,6 +29,14 @@ Route::middleware(['permission:access_admin'])
             ->middleware('permission:manage_users')
             ->name('users.index');
 
+        Route::get('/users/{id}', [UserController::class, 'edit'])
+            ->middleware('permission:manage_users')
+            ->name('users.edit');
+
+        Route::put('/users/{id}', [UserController::class, 'update'])
+            ->middleware('permission:manage_users')
+            ->name('users.update');
+
         /**
          * Token management
          */
