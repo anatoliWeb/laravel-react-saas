@@ -14,6 +14,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $roles = Role::withCount('users')->get();
+
         return view('admin.dashboard', [
             'usersCount' => User::count(),
 
@@ -24,6 +26,12 @@ class DashboardController extends Controller
             'tokensCount' => PersonalAccessToken::count(),
 
             'usersWithDirectPermissions' => User::whereHas('permissions')->count(),
+
+            'usersByRoleLabels' => $roles->pluck('name')->toArray(),
+            'usersByRoleValues' => $roles->pluck('users_count')->toArray(),
+
+            'tokensChartLabels' => ['Total Tokens'],
+            'tokensChartValues' => [PersonalAccessToken::count()],
         ]);
     }
 }

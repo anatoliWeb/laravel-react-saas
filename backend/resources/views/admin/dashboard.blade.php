@@ -46,7 +46,30 @@
     <section class="dashboard-rail">
         <div class="dashboard-placeholder">
             <h2 class="dashboard-placeholder__title">Traffic & Usage</h2>
-            <p class="dashboard-placeholder__text">Chart zone placeholder for upcoming analytics widgets.</p>
+            <script>
+                window.dashboardData = {
+                    usersByRole: {
+                        labels: @json($usersByRoleLabels),
+                        values: @json($usersByRoleValues),
+                    },
+                    tokens: {
+                        labels: @json($tokensChartLabels),
+                        values: @json($tokensChartValues),
+                    }
+                };
+            </script>
+
+            <div class="dashboard-charts">
+                <div class="dashboard-chart-card">
+                    <h2>Users by Role</h2>
+                    <canvas id="usersByRoleChart"></canvas>
+                </div>
+
+                <div class="dashboard-chart-card">
+                    <h2>API Tokens</h2>
+                    <canvas id="tokensChart"></canvas>
+                </div>
+            </div>
         </div>
 
         <div class="dashboard-placeholder">
