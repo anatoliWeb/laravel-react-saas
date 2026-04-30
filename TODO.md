@@ -91,6 +91,17 @@
 - [x] Add SCSS design system (variables, components, layout)
 - [x] Add basic JS interactivity (sidebar toggle)
 
+### Activity System (Audit)
+
+- [x] Implement ActivityLog model and migration
+- [x] Create centralized ActivityService
+- [x] Add global helper activity_log()
+- [x] Implement model observers (User, Token)
+- [x] Ensure automatic activity logging
+- [x] Add fallback manual logging
+- [x] Fix silent failure in logging logic
+
+
 ---
 
 ## Phase 6 — React Frontend

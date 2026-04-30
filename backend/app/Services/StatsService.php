@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Role;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Services\ActivityService;
 
 /**
  * Stats service.
@@ -13,6 +14,13 @@ use Laravel\Sanctum\PersonalAccessToken;
  */
 class StatsService
 {
+    protected ActivityService $activityService;
+
+    public function __construct(ActivityService $activityService)
+    {
+        $this->activityService = $activityService;
+    }
+
     /**
      * Get dashboard statistics.
      *
@@ -34,6 +42,8 @@ class StatsService
             'tokens_total' => PersonalAccessToken::count(),
 
             'users_with_direct_permissions' => User::whereHas('permissions')->count(),
+
+            'recent_activity' => $this->activityService->getRecent(),
         ];
     }
 }

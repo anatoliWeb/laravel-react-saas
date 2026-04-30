@@ -74,7 +74,41 @@
 
         <div class="dashboard-placeholder">
             <h2 class="dashboard-placeholder__title">Recent Activity</h2>
-            <p class="dashboard-placeholder__text">Timeline placeholder for audit and admin events.</p>
+            <div class="activity-list">
+
+                @forelse($recent_activity as $activity)
+
+                    <div class="activity-item">
+
+                        <div class="activity-icon info"></div>
+
+                        <div class="activity-content">
+
+                            <div class="activity-title">
+                                @if($activity->user)
+                                    <strong>{{ $activity->user->email }}</strong>
+                                @endif
+
+                                {{ $activity->description ?? $activity->action }}
+                            </div>
+
+                            <div class="activity-time">
+                                {{ $activity->created_at->diffForHumans() }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @empty
+                    <div class="activity-item">
+                        <div class="activity-content">
+                            <div class="activity-title">No activity yet</div>
+                        </div>
+                    </div>
+                @endforelse
+
+            </div>
         </div>
     </section>
 @endsection

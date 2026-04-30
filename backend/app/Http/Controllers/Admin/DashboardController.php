@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
+use App\Services\ActivityService;
 use Laravel\Sanctum\PersonalAccessToken;
 
 /**
@@ -12,6 +13,13 @@ use Laravel\Sanctum\PersonalAccessToken;
  */
 class DashboardController extends Controller
 {
+    protected ActivityService $activityService;
+
+    public function __construct(ActivityService $activityService)
+    {
+        $this->activityService = $activityService;
+    }
+
     public function index()
     {
         $roles = Role::withCount('users')->get();
@@ -32,6 +40,8 @@ class DashboardController extends Controller
 
             'tokensChartLabels' => ['Total Tokens'],
             'tokensChartValues' => [PersonalAccessToken::count()],
+
+            'recent_activity' => $this->activityService->getRecent(),
         ]);
     }
 }

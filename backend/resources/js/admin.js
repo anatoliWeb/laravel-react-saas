@@ -24,4 +24,14 @@ function initAdminSidebar() {
   });
 }
 
+document.querySelectorAll('.activity-item').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+        item.style.transform = 'translateX(4px)';
+    });
+
+    item.addEventListener('mouseleave', () => {
+        item.style.transform = 'translateX(0)';
+    });
+});
+
 document.addEventListener('DOMContentLoaded', initAdminSidebar);
