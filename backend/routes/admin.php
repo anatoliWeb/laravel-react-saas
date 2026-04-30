@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TokenController;
+use App\Http\Controllers\Admin\DashboardController;
 
 /**
  * Admin routes.
@@ -17,29 +18,28 @@ Route::middleware(['permission:access_admin'])
         /**
          * Dashboard
          */
-        Route::get('/', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
         /**
          * Users management
          */
         Route::get('/users', [UserController::class, 'index'])
             ->middleware('permission:manage_users')
-            ->name('admin.users.index');
+            ->name('users.index');
 
         /**
          * Token management
          */
         Route::get('/tokens', [TokenController::class, 'index'])
             ->middleware('permission:manage_tokens')
-            ->name('admin.tokens.index');
+            ->name('tokens.index');
 
         Route::post('/tokens', [TokenController::class, 'store'])
             ->middleware('permission:manage_tokens')
-            ->name('admin.tokens.store');
+            ->name('tokens.store');
 
         Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
             ->middleware('permission:manage_tokens')
-            ->name('admin.tokens.destroy');
+            ->name('tokens.destroy');
     });

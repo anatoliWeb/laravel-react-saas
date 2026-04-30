@@ -61,7 +61,19 @@
 - [x] Step 28: Create Users management page (list only)
 - [x] Step 29: Create Token management page
 - [x] Step 30: Add create/delete token functionality
-- [x]          Roles and access control for admin panel
+
+### Access Control
+
+- [x] Implement RBAC system (roles + permissions)
+- [x] Add direct user permissions support
+- [x] Create role and permission middleware
+- [x] Protect admin routes with permission checks
+
+### Data & Seeds
+
+- [x] Add seed data for roles and permissions
+- [x] Add demo users with different roles
+- [x] Generate API tokens for testing
 
 ---
 
