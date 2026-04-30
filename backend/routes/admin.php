@@ -7,27 +7,39 @@ use App\Http\Controllers\Admin\TokenController;
 /**
  * Admin routes.
  *
- * This file contains all routes related to internal administration panel.
- * Routes are grouped under /admin prefix and protected by authentication middleware.
+ * All routes are:
+ * - prefixed with /admin (in bootstrap/app.php)
+ * - protected by auth + permission middleware
  */
-Route::get('/', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
+Route::middleware(['permission:access_admin'])
+    ->group(function () {
 
-/**
- * Users management routes.
- */
-Route::get('/users', [UserController::class, 'index'])
-    ->name('users.index');
+        /**
+         * Dashboard
+         */
+        Route::get('/', function () {
+            return view('admin.dashboard');
+        })->name('admin.dashboard');
 
-/**
- * Token management routes
- */
-Route::get('/tokens', [TokenController::class, 'index'])
-    ->name('tokens.index');
+        /**
+         * Users management
+         */
+        Route::get('/users', [UserController::class, 'index'])
+            ->middleware('permission:manage_users')
+            ->name('admin.users.index');
 
-Route::post('/tokens', [TokenController::class, 'store'])
-    ->name('tokens.store');
+        /**
+         * Token management
+         */
+        Route::get('/tokens', [TokenController::class, 'index'])
+            ->middleware('permission:manage_tokens')
+            ->name('admin.tokens.index');
 
-Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
-    ->name('tokens.destroy');
+        Route::post('/tokens', [TokenController::class, 'store'])
+            ->middleware('permission:manage_tokens')
+            ->name('admin.tokens.store');
+
+        Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
+            ->middleware('permission:manage_tokens')
+            ->name('admin.tokens.destroy');
+    });
