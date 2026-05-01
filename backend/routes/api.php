@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\AuthController;
 
 Route::post('/token', [AuthController::class, 'token']);
+Route::post('/login', [AuthController::class, 'token']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UsersController::class, 'index']);

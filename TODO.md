@@ -101,6 +101,14 @@
 - [x] Add fallback manual logging
 - [x] Fix silent failure in logging logic
 
+### Infrastructure / API Integration
+
+- [x] Implement centralized CORS handling in Laravel
+- [x] Add custom CorsMiddleware with preflight support
+- [x] Move CORS configuration to config/cors.php
+- [x] Add environment-based CORS configuration (.env)
+- [x] Remove dependency on nginx for CORS
+- [x] Ensure SPA compatibility (React ↔ Laravel API)
 
 ---
 
@@ -108,8 +116,8 @@
 
 - [x] Step 31: Initialize React app (Vite)
 - [x] Step 32: Setup folder structure (pages, components, services)
-- [ ] Step 33: Create API client (axios/fetch wrapper)
-- [ ] Step 34: Create Dashboard page
+- [x] Step 33: Create API client (axios/fetch wrapper)
+- [x] Step 34: Create Dashboard page
 - [ ] Step 35: Fetch /api/stats and display data
 - [ ] Step 36: Create Users page
 - [ ] Step 37: Fetch /api/users and display list
