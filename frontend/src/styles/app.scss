@@ -2,5 +2,7 @@
 @use './mixins';
 @use './layout';
 @use './components';
+@use './data-table';
+@use './pagination';
 
 @use './auth';

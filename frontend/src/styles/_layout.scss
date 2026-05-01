@@ -30,6 +30,7 @@ body {
 }
 
 .sidebar {
+  min-width: 220px;
   border-right: 1px solid v.$color-border;
   background: v.$color-surface;
   padding: 20px;
@@ -65,8 +66,10 @@ body {
 }
 
 .app-main {
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
 }
 
 .header {
@@ -114,7 +117,7 @@ body {
 }
 
 .app-content {
-  padding: v.$space-3;
+  padding: 20px;
 }
 
 .page-title {
@@ -122,13 +125,65 @@ body {
   font-size: 24px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .app-shell {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   .sidebar {
-    border-right: 0;
+    min-width: 0;
+    width: 100%;
+    border-right: none;
     border-bottom: 1px solid v.$color-border;
+    padding: 10px 12px;
+  }
+
+  .app-main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .sidebar-brand {
+    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .sidebar-link {
+    white-space: nowrap;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .page-header {
+    position: static;
+    left: auto;
+    transform: none;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .app-content {
+    padding: 12px;
   }
 }
