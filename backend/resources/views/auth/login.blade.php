@@ -1,10 +1,11 @@
-<x-guest-layout>
+@extends('layouts.guest')
+
+@section('title', 'Login')
+
+@section('content')
 
     <div class="auth-card">
         <div class="auth-title">Login</div>
-
-
-
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
@@ -21,4 +22,4 @@
         </form>
     </div>
 
-</x-guest-layout>
+@endsection

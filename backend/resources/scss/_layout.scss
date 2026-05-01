@@ -243,3 +243,66 @@ a {
     padding: $space-2;
   }
 }
+
+
+/* Центруємо всю сторінку */
+.guest-layout {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;  /* по горизонталі */
+    align-items: center;      /* по вертикалі */
+    background: #0f172a;      /* темний фон (як у тебе) */
+}
+
+/* Контейнер */
+.guest-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.auth-card {
+    background: #1e293b;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.auth-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: #fff;
+}
+
+/* інпути */
+.auth-card input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: #0f172a;
+    color: #fff;
+}
+
+/* кнопка */
+.auth-button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.auth-button:hover {
+    background: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .guest-layout {
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+}

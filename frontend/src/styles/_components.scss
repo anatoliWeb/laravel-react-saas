@@ -170,3 +170,243 @@
     color: #dbeafe;
   }
 }
+
+.users-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.7);
+  display: grid;
+  place-items: center;
+  z-index: 1200;
+  padding: 16px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  background: #16233b;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.6);
+  animation: modal-in 0.2s ease;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.modal__title {
+  margin: 0;
+  font-size: 17px;
+}
+
+.modal__close {
+  border: 1px solid v.$color-border;
+  background: rgba(255, 255, 255, 0.05);
+  color: v.$color-text;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.modal__body {
+  padding: 16px;
+}
+
+.modal__footer {
+  padding: 0 16px 16px;
+}
+
+.modal__confirm-text {
+  margin-top: 0;
+  margin-bottom: 14px;
+  color: v.$color-text-muted;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.form__fields {
+  display: grid;
+  gap: 12px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+}
+
+.form-field__label {
+  font-size: 13px;
+  color: v.$color-text-muted;
+}
+
+.form-field__input {
+  width: 100%;
+  border: 1px solid v.$color-border;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: v.$color-text;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    border-color: rgba(96, 165, 250, 0.8);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+
+  &.is-error {
+    border-color: rgba(239, 68, 68, 0.8);
+  }
+}
+
+select.form-field__input[multiple] {
+  min-height: 120px;
+}
+
+.form-field__error {
+  margin: 0;
+  color: #fecaca;
+  font-size: 12px;
+}
+
+.form-field__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.form-chip {
+  border: 1px solid v.$color-border;
+  background: rgba(255, 255, 255, 0.05);
+  color: v.$color-text;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(59, 130, 246, 0.45);
+  }
+
+  &.is-active {
+    background: rgba(59, 130, 246, 0.28);
+    border-color: rgba(59, 130, 246, 0.75);
+    color: #dbeafe;
+  }
+}
+
+.permission-groups {
+  display: grid;
+  gap: 10px;
+}
+
+.permission-group {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.permission-group__title {
+  margin: 0 0 8px;
+  text-transform: capitalize;
+  color: v.$color-text-muted;
+  font-size: 12px;
+}
+
+.permission-group__items {
+  display: grid;
+  gap: 6px;
+}
+
+.permission-toggle {
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: v.$color-text;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.14);
+  }
+
+  &.is-active {
+    border-color: rgba(34, 197, 94, 0.55);
+    background: rgba(34, 197, 94, 0.16);
+  }
+}
+
+.permission-toggle__indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.form__btn {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.form__btn--primary {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: rgba(59, 130, 246, 0.65);
+}
+
+.form__btn--secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: v.$color-text;
+  border-color: v.$color-border;
+}
+
+.form__btn--danger {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: rgba(239, 68, 68, 0.7);
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

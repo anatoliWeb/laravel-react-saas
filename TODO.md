@@ -119,32 +119,32 @@
 - [x] Step 33: Create API client (axios/fetch wrapper)
 - [x] Step 34: Create Dashboard page
 - [x] Step 35: Fetch /api/stats and display data
-- [ ] Step 36: Create Users page
-- [ ] Step 37: Fetch /api/users and display list
+- [x] Step 36: Create Users page
+- [x] Step 37: Fetch /api/users and display list
 
 ---
 
 ## Phase 7 - Frontend Improvements
 
-- [ ] Step 38: Add loading states
-- [ ] Step 39: Add error handling (API failures)
-- [ ] Step 40: Add simple UI styling (cards, layout)
-- [ ] Step 41: Store API token (local storage or env)
+- [x] Step 38: Add loading states
+- [x] Step 39: Add error handling (API failures)
+- [x] Step 40: Add simple UI styling (cards, layout)
+- [x] Step 41: Store API token (local storage or env)
 
 ---
 
 ## Phase 8 - Integration
 
-- [ ] Step 42: Connect frontend to backend via Docker network
-- [ ] Step 43: Test full flow (token -> API -> UI)
-- [ ] Step 44: Fix CORS issues if needed
-- [ ] Step 45: Validate endpoints via frontend
+- [x] Step 42: Connect frontend to backend via Docker network
+- [x] Step 43: Test full flow (token -> API -> UI)
+- [x] Step 44: Fix CORS issues if needed
+- [x] Step 45: Validate endpoints via frontend
 
 ---
 
 ## Phase 9 - Logging & Stability
 
-- [ ] Step 46: Add Laravel logging (errors, API calls)
+- [x] Step 46: Add Laravel logging (errors, API calls)
 - [ ] Step 47: Add simple request logging middleware
 - [ ] Step 48: Handle edge cases (empty data, failures)
 

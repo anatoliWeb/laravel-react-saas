@@ -20,15 +20,16 @@ class UserSeeder extends Seeder
          * Permissions
          */
         $permissions = [
-            'access_admin',
-            'manage_users',
-            'manage_tokens',
+            'users.create',
+            'users.edit',
+            'users.delete',
+            'users.view',
         ];
 
         foreach ($permissions as $perm) {
-            Permission::updateOrCreate(
+            Permission::firstOrCreate(
                 ['name' => $perm],
-                ['description' => ucfirst(str_replace('_', ' ', $perm))]
+                ['description' => ucfirst(str_replace('.', ' ', $perm))]
             );
         }
 
@@ -53,12 +54,21 @@ class UserSeeder extends Seeder
         /**
          * Assign permissions to roles
          */
+        // Admin gets full access.
         $adminRole->permissions()->sync(Permission::pluck('id'));
 
+        // Manager: can view and edit users.
         $managerRole->permissions()->sync(
             Permission::whereIn('name', [
-                'access_admin',
-                'manage_tokens'
+                'users.view',
+                'users.edit',
+            ])->pluck('id')
+        );
+
+        // User: read-only access to users.
+        $userRole->permissions()->sync(
+            Permission::whereIn('name', [
+                'users.view',
             ])->pluck('id')
         );
 
@@ -104,7 +114,7 @@ class UserSeeder extends Seeder
              */
             if ($i % 3 === 0) {
                 $user->permissions()->syncWithoutDetaching([
-                    Permission::where('name', 'manage_tokens')->first()->id
+                    Permission::where('name', 'users.view')->first()->id
                 ]);
             }
 
