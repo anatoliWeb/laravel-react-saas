@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Permission;
+use App\Models\ActivityLog;
 use Laravel\Sanctum\PersonalAccessToken;
 use App\Services\ActivityService;
 
@@ -29,21 +31,23 @@ class StatsService
     public function getStats(): array
     {
         return [
-            'users_total' => User::count(),
-
-            'admins' => User::whereHas('roles', fn($q) =>
-            $q->where('name', 'admin')
-            )->count(),
-
-            'managers' => User::whereHas('roles', fn($q) =>
-            $q->where('name', 'manager')
-            )->count(),
-
-            'tokens_total' => PersonalAccessToken::count(),
-
-            'users_with_direct_permissions' => User::whereHas('permissions')->count(),
-
-            'recent_activity' => $this->activityService->getRecent(),
+            'data' => [
+                'users' => User::count(),
+                'roles' => Role::count(),
+                'permissions' => Permission::count(),
+                'activity_logs' => ActivityLog::count(),
+                'admins' => User::whereHas('roles', fn($q) =>
+                    $q->where('name', 'admin')
+                    )->count(),
+                'managers' => User::whereHas('roles', fn($q) =>
+                    $q->where('name', 'manager')
+                    )->count(),
+                'tokens' => PersonalAccessToken::count(),
+                'users_with_direct_permissions' => User::whereHas('permissions')->count(),
+                'recent_activity' => $this->activityService->getRecent(),
+            ]
         ];
     }
+
+
 }

@@ -69,18 +69,126 @@
     background: #dc2626;
   }
 }
-.header {
+
+/* =========================================
+   Activity List
+   ========================================= */
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.activity-item:hover {
+  background: rgba(255,255,255,0.03);
+  transition: 0.2s;
+}
+
+.activity-description {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.activity-meta {
+  font-size: 12px;
+  opacity: 0.6;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
 
-.header-left {
+.activity-user {
+  font-weight: 500;
+}
+
+.activity-time {
+  font-style: italic;
+}
+
+.refresh-indicator {
+  font-size: 12px;
+  margin-left: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  &.visible {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.language-switcher {
+  position: relative;
+}
+
+.language-switcher__trigger {
+  min-width: 52px;
+  border: 1px solid v.$color-border;
+  background: rgba(255, 255, 255, 0.06);
+  color: v.$color-text;
+  padding: 7px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(148, 163, 184, 0.5);
+  }
+}
+
+.language-switcher__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 170px;
+  background: #16233b;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 14px 32px rgba(2, 6, 23, 0.55);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 30;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
+.language-switcher.is-open .language-switcher__menu {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.language-switcher__option {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: v.$color-text;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.18);
+  }
+
+  &.is-active {
+    background: rgba(59, 130, 246, 0.26);
+    color: #dbeafe;
+  }
 }

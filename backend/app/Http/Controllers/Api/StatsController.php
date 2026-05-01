@@ -34,20 +34,24 @@ class StatsController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index() {
+    public function index()
+    {
         try {
             $stats = $this->statsService->getStats();
 
-            return response()->json($stats->toArray());
+            return response()->json($stats);
 
         } catch (\Throwable $e) {
 
-            Log::error('Failed to fetch stats', [
-                'error' => $e->getMessage(),
+            // IMPORTANT:
+            // Never expose internal errors to client
+            // but always log them
+            \Log::error('Stats fetch failed', [
+                'error' => $e->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Internal Server Error'
+                'message' => 'Failed to fetch stats'
             ], 500);
         }
     }

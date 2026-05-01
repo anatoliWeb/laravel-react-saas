@@ -1,10 +1,10 @@
-# TODO.md — Laravel + React SaaS Dashboard
+# TODO.md - Laravel + React SaaS Dashboard
 
 > Goal: Build a portfolio-grade mini SaaS system demonstrating clean architecture, API-first design, token-based auth, and a lightweight admin panel.
 
 ---
 
-## Phase 0 — Project Initialization
+## Phase 0 - Project Initialization
 
 - [x] Step 1: Create repository and initialize README, TODO.md, .gitignore
 - [x] Step 2: Define project structure (backend, frontend, docker, docs)
@@ -13,7 +13,7 @@
 
 ---
 
-## Phase 1 — Docker & Environment
+## Phase 1 - Docker & Environment
 
 - [x] Step 5: Create docker-compose.yml (PHP, Nginx, Node)
 - [x] Step 6: Configure Nginx for Laravel backend
@@ -24,7 +24,7 @@
 
 ---
 
-## Phase 2 — Laravel Backend (API)
+## Phase 2 - Laravel Backend (API)
 
 - [x] Step 11: Initialize Laravel project in /backend
 - [x] Step 12: Configure API routes file
@@ -35,16 +35,16 @@
 
 ---
 
-## Phase 3 — Backend Structure
+## Phase 3 - Backend Structure
 
 - [x] Step 17: Create Services layer (UserService, StatsService)
 - [x] Step 18: Move logic from controllers into services
-- [X] Step 19: Add DTOs or simple data structures
-- [X] Step 20: Add basic error handling (try/catch + logs)
+- [x] Step 19: Add DTOs or simple data structures
+- [x] Step 20: Add basic error handling (try/catch + logs)
 
 ---
 
-## Phase 4 — Authentication (Sanctum)
+## Phase 4 - Authentication (Sanctum)
 
 - [x] Step 21: Install Laravel Sanctum
 - [x] Step 22: Configure token-based authentication
@@ -54,7 +54,7 @@
 
 ---
 
-## Phase 5 — Admin Panel (Laravel)
+## Phase 5 - Admin Panel (Laravel)
 
 - [x] Step 26: Create /admin route group
 - [x] Step 27: Setup simple admin layout (Blade or Livewire)
@@ -108,23 +108,23 @@
 - [x] Move CORS configuration to config/cors.php
 - [x] Add environment-based CORS configuration (.env)
 - [x] Remove dependency on nginx for CORS
-- [x] Ensure SPA compatibility (React ↔ Laravel API)
+- [x] Ensure SPA compatibility (React -> Laravel API)
 
 ---
 
-## Phase 6 — React Frontend
+## Phase 6 - React Frontend
 
 - [x] Step 31: Initialize React app (Vite)
 - [x] Step 32: Setup folder structure (pages, components, services)
 - [x] Step 33: Create API client (axios/fetch wrapper)
 - [x] Step 34: Create Dashboard page
-- [ ] Step 35: Fetch /api/stats and display data
+- [x] Step 35: Fetch /api/stats and display data
 - [ ] Step 36: Create Users page
 - [ ] Step 37: Fetch /api/users and display list
 
 ---
 
-## Phase 7 — Frontend Improvements
+## Phase 7 - Frontend Improvements
 
 - [ ] Step 38: Add loading states
 - [ ] Step 39: Add error handling (API failures)
@@ -133,16 +133,16 @@
 
 ---
 
-## Phase 8 — Integration
+## Phase 8 - Integration
 
 - [ ] Step 42: Connect frontend to backend via Docker network
-- [ ] Step 43: Test full flow (token → API → UI)
+- [ ] Step 43: Test full flow (token -> API -> UI)
 - [ ] Step 44: Fix CORS issues if needed
 - [ ] Step 45: Validate endpoints via frontend
 
 ---
 
-## Phase 9 — Logging & Stability
+## Phase 9 - Logging & Stability
 
 - [ ] Step 46: Add Laravel logging (errors, API calls)
 - [ ] Step 47: Add simple request logging middleware
@@ -150,16 +150,16 @@
 
 ---
 
-## Phase 10 — Documentation
+## Phase 10 - Documentation
 
 - [ ] Step 49: Complete README.md (overview, stack, run steps)
 - [ ] Step 50: Add architecture.md in /docs
 - [ ] Step 51: Document API endpoints with examples
-- [ ] Step 52: Add “Why this stack” section
+- [ ] Step 52: Add "Why this stack" section
 
 ---
 
-## Phase 11 — Polish & Portfolio Ready
+## Phase 11 - Polish & Portfolio Ready
 
 - [ ] Step 53: Clean code and remove debug logs
 - [ ] Step 54: Ensure consistent naming
@@ -192,10 +192,12 @@ A clean, structured, realistic SaaS demo project showing:
 - React frontend
 - Docker setup
 - Real development workflow
-"""
 
-file_path = "/mnt/data/TODO.md"
-with open(file_path, "w", encoding="utf-8") as f:
-    f.write(content)
+---
 
-file_path
+## Settings / Permissions
+
+- [ ] Add user language preferences (backend integration)
+- [ ] Add language permissions per user
+- [ ] Hide language switcher if only one language
+- [ ] Sync allowed languages from backend

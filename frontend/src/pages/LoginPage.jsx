@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { login } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
  */
 function LoginPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     // Form state
     const [email, setEmail] = useState('admin@test.com');
@@ -39,7 +41,7 @@ function LoginPage() {
             navigate('/');
         } catch (err) {
             // display error message from API
-            setError(err.message || 'Login failed');
+            setError(err.message || t('login_failed'));
         } finally {
             setLoading(false);
         }
@@ -48,7 +50,7 @@ function LoginPage() {
     return (
         <div className="auth-wrapper">
             <form className="auth-card" onSubmit={handleSubmit}>
-                <h2>Login</h2>
+                <h2>{t('login')}</h2>
 
                 {/* Error message */}
                 {error && <div className="auth-error">{error}</div>}
@@ -58,7 +60,7 @@ function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
+                    placeholder={t('email')}
                     required
                 />
 
@@ -67,13 +69,13 @@ function LoginPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
+                    placeholder={t('password')}
                     required
                 />
 
                 {/* Submit */}
                 <button type="submit" disabled={loading}>
-                    {loading ? 'Signing in...' : 'Login'}
+                    {loading ? t('signing_in') : t('login')}
                 </button>
             </form>
         </div>

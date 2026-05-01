@@ -70,9 +70,36 @@ body {
 }
 
 .header {
-  border-bottom: 1px solid v.$color-border;
-  background: v.$color-surface;
-  padding: 20px v.$space-3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* LEFT */
+.header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+/* CENTER */
+.page-header {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* RIGHT */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .header-title {
@@ -88,10 +115,6 @@ body {
 
 .app-content {
   padding: v.$space-3;
-}
-
-.page-header {
-  margin-bottom: v.$space-2;
 }
 
 .page-title {

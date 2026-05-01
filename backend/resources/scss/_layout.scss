@@ -211,11 +211,11 @@ a {
 }
 
 .page-header {
-  display: flex;
-  gap: $space-2;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $space-3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-height: 28px; // 🔥 ключ — щоб не стрибало
 }
 
 .page-title {
