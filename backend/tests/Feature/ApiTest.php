@@ -3,13 +3,21 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Permission;
 use Laravel\Sanctum\Sanctum;
 
 class ApiTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function grantPermission(User $user, string $permission): void
+    {
+        $perm = Permission::firstOrCreate(['name' => $permission]);
+        $user->permissions()->syncWithoutDetaching([$perm->id]);
+    }
+
     /**
      * Ensure the /api/users endpoint returns a valid response.
      *
@@ -23,15 +31,17 @@ class ApiTest extends TestCase
     public function test_users_endpoint_returns_valid_data(): void
     {
         $user = User::factory()->create();
+        $this->grantPermission($user, 'users.view');
 
-        // Acting as authenticated user
         Sanctum::actingAs($user);
 
         $response = $this->getJson('/api/users');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                '*' => ['id', 'name']
+                'data' => [
+                    '*' => ['id', 'name', 'email', 'roles'],
+                ],
             ]);
     }
 
@@ -55,8 +65,17 @@ class ApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'users',
-                'active'
+                'data' => [
+                    'users',
+                    'roles',
+                    'permissions',
+                    'activity_logs',
+                    'admins',
+                    'managers',
+                    'tokens',
+                    'users_with_direct_permissions',
+                    'recent_activity',
+                ],
             ]);
     }
 
