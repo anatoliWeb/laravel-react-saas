@@ -154,7 +154,7 @@
 
 - [x] Step 49: Complete README.md (overview, stack, run steps)
 - [x] Step 50: Add architecture.md in /docs
-- [ ] Step 51: Document API endpoints with examples
+- [x] Step 51: Document API endpoints with examples
 - [ ] Step 52: Add "Why this stack" section
 
 ---
