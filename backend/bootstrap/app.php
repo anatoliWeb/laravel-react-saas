@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CorsMiddleware;
 use App\Http\Middleware\PermissionMiddleware;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\LogRequestMiddleware;
 
 /**
  * Application bootstrap configuration.
@@ -62,22 +63,53 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
 
         /**
-         * Global CORS middleware
+         * Global middleware configuration.
          *
-         * Must run FIRST to:
-         * - handle preflight (OPTIONS) requests
-         * - attach CORS headers before any other middleware
+         * WHY:
+         * This is the central place to define middleware execution order
+         * and aliases for the entire application.
          *
-         * This replaces nginx-based CORS handling.
+         * Order matters here — middleware are executed sequentially.
+         */
+
+        /**
+         * CORS Middleware (must be FIRST).
+         *
+         * WHY:
+         * - Handles preflight (OPTIONS) requests before hitting application logic
+         * - Ensures CORS headers are always attached to responses
+         * - Prevents frontend blocking due to missing headers
+         *
+         * NOTE:
+         * This replaces any nginx-level CORS handling,
+         * keeping behavior consistent across environments.
          */
         $middleware->prepend(CorsMiddleware::class);
 
         /**
-         * Middleware aliases
+         * Request logging middleware.
          *
-         * Allows using short names in routes:
-         * - permission: check specific permission
-         * - role: check user role
+         * WHY:
+         * - Logs every incoming request for debugging and monitoring
+         * - Captures method, URL, user, response status and execution time
+         * - Helps identify performance bottlenecks and failing endpoints
+         *
+         * NOTE:
+         * Placed AFTER CORS to ensure even preflight requests are handled properly.
+         */
+        $middleware->append(LogRequestMiddleware::class);
+
+        /**
+         * Middleware aliases.
+         *
+         * WHY:
+         * Provides readable and maintainable route definitions:
+         *
+         * Example:
+         * ->middleware('permission:users.edit')
+         * ->middleware('role:admin')
+         *
+         * Instead of using full class names everywhere.
          */
         $middleware->alias([
             'permission' => PermissionMiddleware::class,
