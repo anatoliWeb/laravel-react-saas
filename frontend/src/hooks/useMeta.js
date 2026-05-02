@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchMeta } from '../services/metaService';
 
+/**
+ * Global metadata loader hook.
+ *
+ * WHY:
+ * Meta (roles/permissions/current user capability set) is shared across pages.
+ * This hook standardizes fetch lifecycle and refresh entry point.
+ */
 export function useMeta() {
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\PermissionController;
  * - prefixed with /admin (in bootstrap/app.php)
  * - protected by auth + permission middleware
  */
-Route::middleware(['permission:access_admin'])
+Route::middleware(['permission:users.view'])
     ->group(function () {
 
         /**
@@ -27,51 +27,51 @@ Route::middleware(['permission:access_admin'])
          * Users management
          */
         Route::get('/users', [UserController::class, 'index'])
-            ->middleware('permission:manage_users')
+            ->middleware('permission:users.view')
             ->name('users.index');
 
         Route::get('/users/{id}', [UserController::class, 'edit'])
-            ->middleware('permission:manage_users')
+            ->middleware('permission:users.edit')
             ->name('users.edit');
 
         Route::put('/users/{id}', [UserController::class, 'update'])
-            ->middleware('permission:manage_users')
+            ->middleware('permission:users.edit')
             ->name('users.update');
 
         /**
          * Token management
          */
         Route::get('/tokens', [TokenController::class, 'index'])
-            ->middleware('permission:manage_tokens')
+            ->middleware('permission:users.view')
             ->name('tokens.index');
 
         Route::post('/tokens', [TokenController::class, 'store'])
-            ->middleware('permission:manage_tokens')
+            ->middleware('permission:users.edit')
             ->name('tokens.store');
 
         Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
-            ->middleware('permission:manage_tokens')
+            ->middleware('permission:users.delete')
             ->name('tokens.destroy');
 
         /**
          * Roles management
          */
         Route::get('/roles', [RoleController::class, 'index'])
-            ->middleware('permission:manage_users')
+            ->middleware('permission:users.view')
             ->name('roles.index');
 
         Route::get('/roles/{id}', [RoleController::class, 'edit'])
-            ->middleware('permission:manage_users')
+            ->middleware('permission:users.edit')
             ->name('roles.edit');
 
         Route::put('/roles/{id}', [RoleController::class, 'update'])
-            ->middleware('permission:manage_users')
+            ->middleware('permission:users.edit')
             ->name('roles.update');
 
         /**
          * Permissions management
          */
         Route::resource('permissions', PermissionController::class)
-            ->middleware('permission:manage_users')
+            ->middleware('permission:users.edit')
             ->names('permissions');
     });

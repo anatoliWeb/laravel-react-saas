@@ -4,7 +4,9 @@ function FormField({
   error,
   onChange,
 }) {
-  const inputClassName = `form-field__input ${error ? 'is-error' : ''}`;
+  const fieldError = Array.isArray(error) ? error[0] : error;
+  const hasError = Boolean(fieldError);
+  const inputClassName = `form-field__input input ${hasError ? 'is-error error' : ''}`;
 
   if (field.type === 'chips') {
     const selectedValues = Array.isArray(value) ? value : [];
@@ -45,7 +47,7 @@ function FormField({
           })}
         </div>
 
-        {error ? <p className="form-field__error">{error}</p> : null}
+        {hasError ? <div className="form-error">{fieldError}</div> : null}
       </div>
     );
   }
@@ -102,7 +104,7 @@ function FormField({
           ))}
         </div>
 
-        {error ? <p className="form-field__error">{error}</p> : null}
+        {hasError ? <div className="form-error">{fieldError}</div> : null}
       </div>
     );
   }
@@ -159,7 +161,7 @@ function FormField({
         placeholder={field.placeholder || ''}
       />
 
-      {error ? <p className="form-field__error">{error}</p> : null}
+      {hasError ? <div className="form-error">{fieldError}</div> : null}
     </div>
   );
 }

@@ -4,6 +4,13 @@ import DataTableHeader from './DataTableHeader';
 import DataTableSearch from './DataTableSearch';
 import DataTablePagination from './DataTablePagination';
 
+/**
+ * Generic SaaS DataTable.
+ *
+ * WHY:
+ * Encapsulates shared table UX (loading/empty/search/actions/pagination)
+ * so feature pages only provide data and behavior, not repeated markup.
+ */
 function DataTable({
   columns,
   data,
@@ -26,6 +33,9 @@ function DataTable({
   const rows = Array.isArray(data) ? data : [];
 
   const visibleActions = useMemo(() => {
+    // WHY:
+    // Permission filtering is UI-level defense-in-depth;
+    // backend still enforces authorization for real operations.
     return actions.filter((action) => !action.permission || permissions.includes(action.permission));
   }, [actions, permissions]);
 

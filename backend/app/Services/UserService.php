@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Permission;
 use App\DTO\UserDTO;
 use Illuminate\Support\Facades\Hash;
 
@@ -62,8 +63,11 @@ class UserService
         ]);
 
         $user->roles()->sync($data['roles'] ?? []);
+        $user->permissions()->sync(
+            Permission::whereIn('name', $data['permissions'] ?? [])->pluck('id')
+        );
 
-        return $user->load('roles:id,name');
+        return $user->load('roles:id,name', 'permissions:id,name');
     }
 
     public function update(int $id, array $data): User
@@ -81,8 +85,11 @@ class UserService
 
         $user->update($payload);
         $user->roles()->sync($data['roles'] ?? []);
+        $user->permissions()->sync(
+            Permission::whereIn('name', $data['permissions'] ?? [])->pluck('id')
+        );
 
-        return $user->load('roles:id,name');
+        return $user->load('roles:id,name', 'permissions:id,name');
     }
 
     public function delete(int $id): void

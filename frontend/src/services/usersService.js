@@ -11,6 +11,8 @@ export function fetchUsers() {
 }
 
 export function createUser(payload) {
+  // WHY:
+  // Backend contract expects normalized IDs/names payload prepared by page layer.
   return apiRequest('/users', {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -18,6 +20,8 @@ export function createUser(payload) {
 }
 
 export function updateUser(userId, payload) {
+  // WHY:
+  // Keeping update transport centralized avoids endpoint drift across forms.
   return apiRequest(`/users/${userId}`, {
     method: 'PUT',
     body: JSON.stringify(payload),

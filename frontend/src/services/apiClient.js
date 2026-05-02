@@ -27,15 +27,25 @@ export async function apiRequest(path, options = {}) {
   if (!response.ok) {
     // Try to parse error
     let errorMessage = `HTTP ${response.status}`;
+    let errorData = null;
 
     try {
-      const errorData = await response.json();
+      errorData = await response.json();
       errorMessage = errorData.message || errorMessage;
     } catch (e) {
       // ignore JSON parse error
     }
 
-    throw new Error(errorMessage);
+    // WHY:
+    // We preserve backend payload on the thrown Error object
+    // so form-level handlers can consume structured 422 field errors.
+    const error = new Error(errorMessage);
+    error.data = errorData;
+    error.response = {
+      status: response.status,
+      data: errorData,
+    };
+    throw error;
   }
 
   return response.json();

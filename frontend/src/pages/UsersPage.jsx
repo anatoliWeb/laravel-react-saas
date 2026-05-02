@@ -7,6 +7,7 @@ import Modal from '../components/ui/Modal/Modal';
 import Form from '../components/ui/Form/Form';
 import { useMeta } from '../hooks/useMeta';
 import { can } from '../utils/permissions';
+import { useLoading } from '../contexts/LoadingContext';
 
 function normalizeRoleNames(roles = []) {
   if (!Array.isArray(roles) || roles.length === 0) {
@@ -16,36 +17,43 @@ function normalizeRoleNames(roles = []) {
   return roles.map((role) => (typeof role === 'string' ? role : role.name)).join(', ');
 }
 
-function mapRoleIdsToObjects(roleIds, availableRoles) {
-  return (roleIds || [])
-    .map((roleId) => availableRoles.find((role) => Number(role.id) === Number(roleId)))
-    .filter(Boolean)
-    .map((role) => ({ id: role.id, name: role.name }));
-}
-
+/**
+ * Users management page.
+ *
+ * WHY:
+ * Combines listing + CRUD modals in one place so we can keep
+ * table state (search/sort/pagination) stable while editing data.
+ */
 function UsersPage() {
   const { setTitle, setIsRefreshing } = useHeader();
   const { t } = useTranslation();
+  const { showLoading, hideLoading } = useLoading();
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sort, setSort] = useState({ key: null, direction: null });
   const tableRef = useRef(null);
+  // WHY:
+  // StrictMode can trigger effect twice in development.
+  // This guard prevents duplicate initial fetches and noisy UI flicker.
   const hasFetched = useRef(false);
   const [modalState, setModalState] = useState({ type: null, user: null });
-  const [formValues, setFormValues] = useState({ name: '', email: '', roles: [], permissions: [] });
+  const [formValues, setFormValues] = useState({ name: '', email: '', password: '', roles: [], permissions: [] });
   const [formErrors, setFormErrors] = useState({});
+  const [formErrorMessage, setFormErrorMessage] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const { meta } = useMeta();
   const roles = meta?.roles || [];
   const permissions = meta?.current_user_permissions || [];
   const availablePermissions = meta?.permissions || [];
+  // WHY:
+  // Keep role assignment policy configurable from one place
+  // without changing form component internals.
   const ALLOW_MULTIPLE_ROLES = false;
 
   useEffect(() => {
@@ -73,7 +81,10 @@ function UsersPage() {
 
         setUsers(payload);
       } catch (err) {
-        setError(err.message);
+        // WHY:
+        // Initial table load errors are logged for diagnostics.
+        // We do not expose raw API internals in page-level UI.
+        console.error('Users fetch failed', err);
       } finally {
         setLoading(false);
         setIsRefreshing(false);
@@ -145,6 +156,13 @@ function UsersPage() {
       { name: 'name', label: t('name'), type: 'text', required: true, requiredMessage: t('field_required') },
       { name: 'email', label: t('email'), type: 'email', required: true, requiredMessage: t('field_required') },
       {
+        name: 'password',
+        label: t('password'),
+        type: 'password',
+        required: modalState.type === 'create',
+        requiredMessage: t('field_required'),
+      },
+      {
         name: 'roles',
         label: t('roles'),
         type: 'chips',
@@ -161,17 +179,21 @@ function UsersPage() {
           value: permission.name,
           label: permission.name,
         })),
+        // WHY:
+        // UI must not expose direct-permission editing unless current
+        // operator has explicit rights for that sensitive action.
         hidden: !can('users.edit_permissions', meta),
       },
     ],
-    [roles, availablePermissions, meta, t],
+    [roles, availablePermissions, meta, modalState.type, t],
   );
 
   const openCreateModal = () => {
-    setFormValues({ name: '', email: '', roles: [], permissions: [] });
+    setFormValues({ name: '', email: '', password: '', roles: [], permissions: [] });
     setSelectedRoles([]);
     setSelectedPermissions([]);
     setFormErrors({});
+    setFormErrorMessage(null);
     setModalState({ type: 'create', user: null });
   };
 
@@ -199,12 +221,14 @@ function UsersPage() {
     setFormValues({
       name: user.name || '',
       email: user.email || '',
+      password: '',
       roles: roleNamesFromUser,
       permissions: directPermissionNames,
     });
     setSelectedRoles(roleNamesFromUser);
     setSelectedPermissions(directPermissionNames);
     setFormErrors({});
+    setFormErrorMessage(null);
     setModalState({ type: 'edit', user });
   };
 
@@ -217,6 +241,7 @@ function UsersPage() {
     setSelectedRoles([]);
     setSelectedPermissions([]);
     setFormErrors({});
+    setFormErrorMessage(null);
   };
 
   const handleFormChange = (name, value) => {
@@ -229,12 +254,37 @@ function UsersPage() {
     }
 
     setFormValues((prev) => ({ ...prev, [name]: value }));
-    setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    setFormErrors((prev) => ({ ...prev, [name]: null }));
+  };
+
+  const applySubmitError = (submitError) => {
+    const errorData = submitError?.response?.data || submitError?.data;
+    const errorMap = {
+      // Future backend-to-i18n mapping placeholder.
+      // 'The email has already been taken.': t('email_taken'),
+      // 'The password field is required.': t('password_required'),
+    };
+
+    if (errorData?.errors) {
+      // WHY:
+      // Backend field errors are preserved to keep precise form feedback,
+      // while global message stays localized and user-friendly.
+      setFormErrors(errorData.errors || {});
+      setFormErrorMessage(errorMap[errorData?.message] || t('validation_error'));
+      return;
+    }
+
+    setFormErrors({});
+    setFormErrorMessage(t('unexpected_error'));
   };
 
   const toPayload = (values) => ({
     name: values.name.trim(),
     email: values.email.trim(),
+    ...(values.password ? { password: values.password } : {}),
+    // WHY:
+    // UI operates on readable role names, but backend contract is role IDs.
+    // Mapping stays here so the rest of the form can remain presentation-focused.
     roles: (selectedRoles.length ? selectedRoles : values.roles || [])
       .map((roleName) => roles.find((role) => role.name === roleName)?.id)
       .filter(Boolean)
@@ -243,29 +293,34 @@ function UsersPage() {
   });
 
   const handleSubmitForm = async (values) => {
+    setFormErrorMessage(null);
+    setFormErrors({});
     const payload = toPayload(values);
 
     if (modalState.type === 'create') {
       try {
+        // WHY:
+        // Global loader blocks concurrent interactions while mutation is in-flight.
+        showLoading('Creating user...');
         const created = await createUser(payload);
         const user = created?.data || created;
         if (user && user.id) {
           setUsers((prev) => [user, ...prev]);
         }
+        closeModal();
       } catch (submitError) {
-        const nextId = users.reduce((max, user) => Math.max(max, Number(user.id) || 0), 0) + 1;
-        setUsers((prev) => [{
-          id: nextId,
-          ...payload,
-          roles: mapRoleIdsToObjects(payload.roles, roles),
-        }, ...prev]);
+        applySubmitError(submitError);
+      } finally {
+        hideLoading();
       }
-      closeModal();
       return;
     }
 
     if (modalState.type === 'edit' && modalState.user) {
       try {
+        // WHY:
+        // Update path reuses the same loader pattern for consistent UX expectations.
+        showLoading('Updating user...');
         const updated = await updateUser(modalState.user.id, payload);
         const updatedUser = updated?.data || updated;
 
@@ -276,20 +331,12 @@ function UsersPage() {
 
           return updatedUser && updatedUser.id ? updatedUser : { ...user, ...payload };
         }));
+        closeModal();
       } catch (submitError) {
-        setUsers((prev) => prev.map((user) => {
-          if (user.id !== modalState.user.id) {
-            return user;
-          }
-
-          return {
-            ...user,
-            ...payload,
-            roles: mapRoleIdsToObjects(payload.roles, roles),
-          };
-        }));
+        applySubmitError(submitError);
+      } finally {
+        hideLoading();
       }
-      closeModal();
     }
   };
 
@@ -299,13 +346,22 @@ function UsersPage() {
     }
 
     try {
+      showLoading('Deleting user...');
       await deleteUser(modalState.user.id);
+      setUsers((prev) => prev.filter((user) => user.id !== modalState.user.id));
+      closeModal();
     } catch (submitError) {
-      // Keep optimistic UI behavior in local-only mode.
-    }
+      const errorData = submitError?.response?.data || submitError?.data;
+      if (errorData?.errors) {
+        setFormErrors(errorData.errors || {});
+        setFormErrorMessage(t('validation_error'));
+        return;
+      }
 
-    setUsers((prev) => prev.filter((user) => user.id !== modalState.user.id));
-    closeModal();
+      setFormErrorMessage(t('unexpected_error'));
+    } finally {
+      hideLoading();
+    }
   };
 
   const canCreate = can('users.create', meta);
@@ -367,8 +423,6 @@ function UsersPage() {
         </div>
       ) : null}
 
-      {error ? <p className="error-message">{error}</p> : null}
-
       <DataTable
         columns={columns}
         data={paginatedUsers}
@@ -392,6 +446,10 @@ function UsersPage() {
         title={modalState.type === 'edit' ? t('edit_user') : t('create_user')}
         onClose={closeModal}
       >
+        {formErrorMessage ? (
+          <div className="form-error-global">{formErrorMessage}</div>
+        ) : null}
+
         <Form
           schema={formSchema}
           values={formValues}

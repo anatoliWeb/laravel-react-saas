@@ -48,5 +48,7 @@
   "create": "Створити",
   "save_changes": "Зберегти зміни",
   "cancel": "Скасувати",
-  "field_required": "Це поле обов'язкове"
+  "field_required": "Це поле обов'язкове",
+  "validation_error": "Помилка валідації",
+  "unexpected_error": "Щось пішло не так"
 }

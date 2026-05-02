@@ -48,5 +48,7 @@
     "create":  "Erstellen",
     "save_changes":  "Anderungen speichern",
     "cancel":  "Abbrechen",
-    "field_required":  "Dieses Feld ist erforderlich"
+    "field_required":  "Dieses Feld ist erforderlich",
+    "validation_error": "Validierungsfehler",
+    "unexpected_error": "Etwas ist schief gelaufen"
 }

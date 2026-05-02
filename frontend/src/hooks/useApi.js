@@ -1,6 +1,12 @@
 import { useCallback, useState } from 'react';
 
-// Small reusable hook for future API integrations.
+/**
+ * Async request state wrapper.
+ *
+ * WHY:
+ * Keeps local loading/error boilerplate out of feature components
+ * when an API call does not need page-specific orchestration.
+ */
 export function useApi(requestFn) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -40,8 +40,14 @@ function LoginPage() {
             // redirect to dashboard after successful login
             navigate('/');
         } catch (err) {
-            // display error message from API
-            setError(err.message || t('login_failed'));
+            const errorData = err?.response?.data || err?.data;
+
+            if (errorData?.errors) {
+                setError(t('validation_error'));
+                return;
+            }
+
+            setError(t('unexpected_error'));
         } finally {
             setLoading(false);
         }

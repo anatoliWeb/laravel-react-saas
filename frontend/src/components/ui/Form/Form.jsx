@@ -1,5 +1,12 @@
 import FormField from './FormField';
 
+/**
+ * Reusable schema-driven form wrapper.
+ *
+ * WHY:
+ * Centralizes required-field validation and submit gating so modal forms
+ * can stay declarative and avoid duplicate validation code per page.
+ */
 function Form({
   schema,
   values,
@@ -29,6 +36,9 @@ function Form({
       }
     });
 
+    // WHY:
+    // We stop submit early to keep API calls reserved for valid payloads
+    // and let users fix issues immediately in current modal context.
     setErrors?.(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
       return;

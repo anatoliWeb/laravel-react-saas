@@ -45,7 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
          * Used for admin panel with custom middleware stack.
          */
         then: function (): void {
-            Route::middleware(['web', 'auth', 'permission:access_admin'])
+            Route::middleware(['web', 'auth', 'permission:users.view'])
                 ->prefix('admin')
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));

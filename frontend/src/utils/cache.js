@@ -30,6 +30,9 @@ export function getCache(key) {
         const parsed = JSON.parse(raw);
 
         if (Date.now() > parsed.expiry) {
+            // WHY:
+            // Expired entries are removed eagerly to prevent stale reads
+            // and keep localStorage footprint bounded over time.
             localStorage.removeItem(CACHE_PREFIX + key);
             return null;
         }

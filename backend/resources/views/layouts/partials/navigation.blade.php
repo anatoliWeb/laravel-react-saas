@@ -14,7 +14,7 @@
     <nav class="admin-sidebar__nav" aria-label="Sidebar navigation">
         <section class="admin-sidebar__section">
             <h2 class="admin-sidebar__heading">Overview</h2>
-            @if(auth()->user()->hasPermission('access_admin'))
+            @if(auth()->user()->hasPermission('users.view'))
                 <a href="{{ route('admin.dashboard') }}" class="admin-sidebar__link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h8V3H3z"/><path d="M13 21h8v-6h-8z"/><path d="M13 3v8h8V3z"/><path d="M3 21h8v-6H3z"/></svg>
                     <span class="admin-sidebar__label">Dashboard</span>
@@ -24,7 +24,7 @@
 
         <section class="admin-sidebar__section">
             <h2 class="admin-sidebar__heading">Management</h2>
-            @if(auth()->user()->hasPermission('manage_users'))
+            @if(auth()->user()->hasPermission('users.view'))
                 <a href="{{ route('admin.users.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.users.*') ? 'is-active' : '' }}">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
                     <span class="admin-sidebar__label">Users</span>
@@ -42,7 +42,7 @@
             @endif
         </section>
 
-        @if(auth()->user()->hasPermission('manage_tokens'))
+        @if(auth()->user()->hasPermission('users.view'))
             <section class="admin-sidebar__section">
                 <h2 class="admin-sidebar__heading">API</h2>
                 <a href="{{ route('admin.tokens.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.tokens.*') ? 'is-active' : '' }}">

@@ -47,7 +47,11 @@ function DashboardPage() {
                 setCache('dashboard_stats', response.data, 60000);
                 setError(null);
             } catch (err) {
-                setError(err.message);
+                // WHY:
+                // Keep full technical details in console for debugging,
+                // while UI receives a translated generic message.
+                console.error('Dashboard stats fetch failed', err);
+                setError(t('unexpected_error'));
             } finally {
                 setLoading(false);
                 setIsRefreshing(false);
@@ -58,6 +62,9 @@ function DashboardPage() {
             const cached = getCache('dashboard_stats');
 
             if (cached) {
+                // WHY:
+                // Fast first paint from cache reduces perceived latency
+                // while we still revalidate in background.
                 setStats(cached);
                 setLoading(false);
 
@@ -83,7 +90,7 @@ function DashboardPage() {
         <section>
             {error && (
                 <p style={{ color: 'orange' }}>
-                    {t('showing_cached_data')} {error}
+                    {t('showing_cached_data')} {t('unexpected_error')}
                 </p>
             )}
 

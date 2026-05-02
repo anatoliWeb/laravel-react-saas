@@ -1,5 +1,12 @@
 import { useEffect } from 'react';
 
+/**
+ * Accessible modal shell with slot-like regions.
+ *
+ * WHY:
+ * A single modal primitive keeps behavior consistent (escape, backdrop close,
+ * focus context) across create/edit/delete flows.
+ */
 function Modal({
   isOpen,
   title,
@@ -19,6 +26,9 @@ function Modal({
       }
     };
 
+    // WHY:
+    // Escape handling is attached only while modal is open
+    // to avoid leaking global key listeners.
     document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);
   }, [isOpen, onClose]);

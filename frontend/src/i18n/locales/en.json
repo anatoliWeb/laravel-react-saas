@@ -48,5 +48,7 @@
     "create":  "Create",
     "save_changes":  "Save Changes",
     "cancel":  "Cancel",
-    "field_required":  "This field is required"
+    "field_required":  "This field is required",
+    "validation_error": "Validation error",
+    "unexpected_error": "Something went wrong"
 }
