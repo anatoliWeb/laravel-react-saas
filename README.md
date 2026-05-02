@@ -1,186 +1,204 @@
 # Laravel + React SaaS Dashboard
 
-## Language
-
-- 🇬🇧 English (default)
-- 🇺🇦 Українська: [README_UA.md](./README_UA.md)
+English documentation. Ukrainian version: [README_UA.md](./README_UA.md)
 
 ## Overview
 
-This project demonstrates a modern API-first web application architecture built with Laravel and React.
+This project simulates a real-world SaaS architecture where a Laravel API powers a separate React SPA frontend.
 
-It provides a clean separation between backend services and frontend client, with a focus on scalability, maintainability, and real-world development practices.
+It exists to demonstrate production-style engineering decisions beyond basic CRUD:
+- API-first backend with clear contracts
+- RBAC-driven access control and permission-aware UI
+- centralized activity logging for auditability
+- modular frontend architecture with reusable UI systems
 
-The system includes:
-- RESTful API built with Laravel
-- Token-based authentication
-- Lightweight admin panel for system management
-- React-based dashboard consuming backend services
+The goal is to showcase how backend and frontend evolve together in a scalable monorepo.
 
----
+## Features
+
+### Backend
+- API-first architecture (Laravel)
+- RBAC with roles and permissions
+- Activity logging system (service + observers)
+- FormRequest validation for API inputs
+- Service layer for business logic separation
+- Sanctum token authentication
+
+### Frontend
+- React SPA with Vite
+- Protected and permission-aware UI rendering
+- Global loader system for async operations
+- Modal form system with 422 validation handling
+- Reusable DataTable (search, sorting, pagination, actions)
+- i18n support (EN / UK / DE)
 
 ## Architecture
 
-The application follows a service-oriented architecture:
+### Request flow
+`Controller -> Service -> Model -> JSON response`
 
-- **Backend (Laravel)**
-  - Handles business logic
-  - Provides REST API
-  - Manages authentication and tokens
-  - Includes internal admin panel
+- Controllers keep HTTP concerns minimal.
+- Services contain business logic and mutation rules.
+- Models handle persistence and relationships.
+- FormRequests enforce input contracts.
 
-- **Frontend (React)**
-  - Consumes API via HTTP
-  - Displays dashboard and data views
-  - Handles user interaction
+### Separation of concerns
+- Backend is API-first and reusable for multiple clients.
+- Frontend consumes API through dedicated service modules.
+- RBAC is enforced on both layers:
+  - backend middleware/authorization (source of truth)
+  - frontend conditional rendering (UX layer)
 
-- **Communication**
-  - JSON API over HTTP
-  - Bearer token authentication
+### Activity logging
+- Centralized `ActivityService` is the logging entry point.
+- Model observers automate logging for key domain events.
+- Dashboard stats can consume recent activity history.
 
----
+### DTO usage
+- DTO-style shaping is used to keep API payloads predictable and UI-friendly.
 
 ## Stack
 
 ### Backend
-- PHP 8+
-- Laravel
-- Laravel Sanctum (token authentication)
+- PHP 8.3+
+- Laravel 13
+- Laravel Sanctum
 
 ### Frontend
 - React (Vite)
-- Axios / Fetch API
+- SCSS
+- i18next
 
 ### Infrastructure
-- Docker
+- Docker Compose
 - Nginx
+- MySQL 8
+- Redis 7
 
----
+## Security
 
-## Features
+- Token-based authentication via Sanctum
+- Password hashing with Laravel hashing layer
+- Validation-first API strategy via FormRequests
+- RBAC enforcement with permission middleware
+- Frontend hides restricted actions but backend still validates authorization
+- Login hardening is designed around API validation and centralized auth endpoints
 
-- API-first architecture
-- Token-based authentication (Sanctum)
-- Modular backend structure (Controllers + Services)
-- Admin panel for managing access
-- Clean separation of concerns
-- Dockerized environment
+## Development
 
----
+### Frontend development
+- Source: `frontend/`
+- Main app entry: `frontend/src/main.jsx`
+- API consumption: `frontend/src/services/`
+- i18n files: `frontend/src/i18n/locales/`
 
-## API Endpoints (Example)
+### Backend development
+- Source: `backend/`
+- API routes: `backend/routes/api.php`
+- Services: `backend/app/Services/`
+- Requests: `backend/app/Http/Requests/`
 
-```
-GET /api/users
-GET /api/stats
-```
+### Configuration
+- Root `.env` is used by Docker services
+- Backend env sample: `backend/.env.example`
+- Frontend API base URL: `VITE_API_BASE_URL` (in frontend env)
 
-### Example Response
+## Running Project
 
-```json
-{
-  "users": [
-    { "id": 1, "name": "John Doe" },
-    { "id": 2, "name": "Jane Smith" }
-  ]
-}
-```
-
----
-
-## Authentication
-
-All protected endpoints require a Bearer token:
-
-```
-Authorization: Bearer YOUR_TOKEN
-```
-
-Tokens can be managed via the internal admin panel.
-
----
-
-## Development Approach
-
-This project follows a structured, incremental development process:
-
-- Feature-based development
-- Small, focused commits
-- Clear separation between backend and frontend
-- Iterative improvements
-
-All development steps are tracked in `TODO.md`.
-
----
-
-## How to Run
-
-1. Clone the repository
-
-```
+1. Clone repository
+```bash
 git clone <repository_url>
-cd project
+cd laravel-react
 ```
 
-2. Copy environment file
-
-```
+2. Create environment file in project root
+```bash
 cp .env.example .env
 ```
 
-3. Start containers
-
+3. Start Docker services
+```bash
+docker compose up -d
 ```
-docker-compose up -d
+
+4. Open applications
+- Frontend: `http://localhost:5173`
+- Backend (Nginx): `http://localhost:8080`
+- API example: `http://localhost:8080/api/users`
+
+## Environment Notes
+
+Docker services from `docker-compose.yml`:
+- `backend` (php-fpm)
+- `nginx`
+- `frontend` (Vite dev server)
+- `mysql`
+- `redis`
+- `websocket` (reserved for realtime/dev tasks)
+
+Important notes:
+- Database host inside containers should match Docker service name (`mysql`).
+- Ports are controlled via `.env` (`APP_PORT`, `FRONT_PORT`).
+- Backend and frontend are mounted as volumes for live development.
+
+## Testing
+
+Feature tests exist for critical backend flows (including users API, metadata, activity logging, auth-related API checks).
+
+Run tests inside backend container:
+```bash
+docker compose exec -T backend php artisan test
 ```
 
-4. Access services
+Or locally (if PHP is installed):
+```bash
+cd backend
+php artisan test
+```
 
-- Backend API: http://localhost/api
-- Frontend: http://localhost
-- Admin panel: http://localhost/admin
+## Screenshots
 
----
+Placeholders (to be replaced with real images):
+- Dashboard overview
+- Users DataTable
+- Create/Edit user modal
 
 ## Project Structure
 
+```text
+/backend      Laravel API + admin backend logic
+/frontend     React SPA
+/docker       Dockerfiles and nginx configuration
+/docs         Additional project docs
+TODO.md       Step-by-step development plan
+README.md     English documentation
+README_UA.md  Ukrainian documentation
 ```
-/backend     Laravel application (API + Admin)
-/frontend    React application
-/docker      Docker configuration
-/docs        Additional documentation
-```
-
----
 
 ## Documentation
 
-- Architecture: [docs/architecture.md](./docs/architecture.md)
-- Commands: [docs/commands.md](./docs/commands.md)
-- Development Plan: [TODO.md](/TODO.md)
+- Development plan: [TODO.md](./TODO.md)
+- Architecture notes: [docs/architecture.md](./docs/architecture.md)
+- Commands reference: [docs/commands.md](./docs/commands.md)
 
----
+## Development Approach
 
-## Notes
+- Feature-based commits
+- Small, testable steps from `TODO.md`
+- Clean commit messages with clear scope
 
-- This project is designed to reflect real-world development patterns
-- Focus is on structure, clarity, and maintainability
-- Business logic is intentionally simplified
-
----
+Example commit style:
+- `feat(users): add roles and permissions sync in API`
+- `fix(frontend): handle users fetch retry and empty states`
 
 ## Future Improvements
 
-- Database integration
-- Role-based access control
-- Advanced logging and monitoring
-- Real-time features
-- Extended admin capabilities
-
----
+- Add full API documentation (OpenAPI/Swagger)
+- Expand end-to-end test coverage for SPA flows
+- Add audit filtering/export tools for activity logs
+- Introduce CI quality gates (lint + tests + build)
+- Finalize production deployment docs
 
 ## License
 
-This project is licensed under the MIT License.
-
-See the [LICENSE](./LICENSE) file for details.
+MIT License. See [LICENSE](./LICENSE).

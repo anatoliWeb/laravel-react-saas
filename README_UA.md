@@ -1,155 +1,204 @@
 # Laravel + React SaaS Dashboard
 
-## Мова
+Українська документація. Англійська версія: [README.md](./README.md)
 
-- 🇺🇦 Українська (поточна)
-- 🇬🇧 English (./README.md)
+## Огляд
 
-## Опис
+Цей проєкт симулює реальну SaaS-архітектуру, де Laravel API обслуговує окремий React SPA фронтенд.
 
-Цей проєкт демонструє сучасний підхід до розробки веб-додатків з використанням архітектури API-first.
+Його мета — показати інженерний підхід рівня production, а не базовий CRUD:
+- API-first backend із чіткими контрактами
+- RBAC-контроль доступу та permission-aware UI
+- централізоване логування активностей для аудиту
+- модульна frontend-архітектура з перевикористовуваними UI-системами
 
-Система побудована з чітким розділенням між backend (Laravel) та frontend (React), що забезпечує масштабованість, гнучкість та зручність підтримки.
+Проєкт демонструє, як backend і frontend масштабуються разом у monorepo.
 
----
+## Функціональність
+
+### Backend
+- API-first архітектура (Laravel)
+- RBAC (ролі та дозволи)
+- Система логування активностей (service + observers)
+- Валідація вхідних даних через FormRequest
+- Service layer для розділення бізнес-логіки
+- Токен-автентифікація через Sanctum
+
+### Frontend
+- React SPA на Vite
+- Захищений і permission-aware рендеринг UI
+- Глобальний loader для async-операцій
+- Модальна форма з обробкою 422 помилок
+- Перевикористовуваний DataTable (пошук, сортування, пагінація, дії)
+- i18n підтримка (EN / UK / DE)
 
 ## Архітектура
 
-Система складається з двох основних частин:
+### Потік запиту
+`Controller -> Service -> Model -> JSON response`
 
-### Backend (Laravel)
-- Бізнес-логіка
-- REST API
-- Авторизація та токени
-- Адмін-панель
+- Контролери містять лише HTTP-рівень.
+- Сервіси містять бізнес-логіку та правила змін.
+- Моделі відповідають за збереження і зв’язки.
+- FormRequest фіксує вхідні контракти.
 
-### Frontend (React)
-- Інтерфейс користувача
-- Взаємодія з API
-- Відображення даних
+### Розділення відповідальностей
+- Backend API-first і придатний для різних клієнтів.
+- Frontend працює з API через окремі service-модулі.
+- RBAC забезпечується на двох рівнях:
+  - backend middleware/authorization (джерело істини)
+  - frontend conditional rendering (UX-рівень)
 
-### Взаємодія
-- HTTP + JSON
-- Авторизація через Bearer Token
+### Логування активностей
+- `ActivityService` — центральна точка логування.
+- Model observers автоматизують логування ключових подій.
+- Dashboard-статистика може використовувати recent activity.
 
----
+### DTO-підхід
+- DTO-подібне формування відповіді зберігає передбачуваний контракт API для UI.
 
-## Технології
+## Стек
 
 ### Backend
-- PHP 8+
-- Laravel
+- PHP 8.3+
+- Laravel 13
 - Laravel Sanctum
 
 ### Frontend
 - React (Vite)
-- Axios / Fetch
+- SCSS
+- i18next
 
 ### Інфраструктура
-- Docker
+- Docker Compose
 - Nginx
+- MySQL 8
+- Redis 7
 
----
+## Безпека
 
-## Функціонал
+- Токен-автентифікація через Sanctum
+- Хешування паролів стандартним Laravel hashing layer
+- Validation-first стратегія API через FormRequest
+- RBAC enforcement через permission middleware
+- Frontend приховує заборонені дії, але backend завжди перевіряє авторизацію
+- Захист логіну побудований навколо централізованої auth-логіки і валідації
 
-- API-first підхід
-- Токенна авторизація
-- Адмін-панель для керування доступом
-- Розділення логіки (Controller / Service)
-- Docker-оточення
+## Розробка
 
----
+### Frontend
+- Код: `frontend/`
+- Entry point: `frontend/src/main.jsx`
+- API-шар: `frontend/src/services/`
+- i18n-файли: `frontend/src/i18n/locales/`
 
-## API (приклад)
+### Backend
+- Код: `backend/`
+- API-роути: `backend/routes/api.php`
+- Сервіси: `backend/app/Services/`
+- Request-класи: `backend/app/Http/Requests/`
 
-```
-GET /api/users
-GET /api/stats
-```
+### Конфігурація
+- Кореневий `.env` використовується Docker-сервісами
+- Приклад backend env: `backend/.env.example`
+- Базовий URL API для frontend: `VITE_API_BASE_URL`
 
-### Приклад відповіді
-
-```json
-{
-  "users": [
-    { "id": 1, "name": "Іван" },
-    { "id": 2, "name": "Марія" }
-  ]
-}
-```
-
----
-
-## Авторизація
-
-```
-Authorization: Bearer YOUR_TOKEN
-```
-
-Токени створюються через адмін-панель.
-
----
-
-## Як запустити
+## Запуск проєкту
 
 1. Клонувати репозиторій
-
+```bash
+git clone <repository_url>
+cd laravel-react
 ```
-git clone <repo>
-cd project
-```
 
-2. Створити .env
-
-```
+2. Створити файл середовища в корені
+```bash
 cp .env.example .env
 ```
 
-3. Запустити Docker
-
-```
-docker-compose up -d
-```
-
----
-
-## Структура
-
-```
-/backend
-/frontend
-/docker
-/docs
+3. Підняти Docker-сервіси
+```bash
+docker compose up -d
 ```
 
----
+4. Відкрити сервіси
+- Frontend: `http://localhost:5173`
+- Backend (Nginx): `http://localhost:8080`
+- API приклад: `http://localhost:8080/api/users`
+
+## Нотатки по середовищу
+
+Сервіси з `docker-compose.yml`:
+- `backend` (php-fpm)
+- `nginx`
+- `frontend` (Vite dev server)
+- `mysql`
+- `redis`
+- `websocket` (резерв під realtime/dev задачі)
+
+Важливо:
+- Хост БД всередині контейнерів має відповідати Docker-сервісу (`mysql`).
+- Порти керуються через `.env` (`APP_PORT`, `FRONT_PORT`).
+- Backend і frontend підключені як volumes для live-розробки.
+
+## Тестування
+
+У проєкті є feature-тести для критичних backend-сценаріїв (users API, meta, activity logging, auth API).
+
+Запуск тестів у backend контейнері:
+```bash
+docker compose exec -T backend php artisan test
+```
+
+Локально (якщо встановлено PHP):
+```bash
+cd backend
+php artisan test
+```
+
+## Скриншоти
+
+Плейсхолдери (замінити на реальні зображення):
+- Dashboard overview
+- Users DataTable
+- Create/Edit user modal
+
+## Структура проєкту
+
+```text
+/backend      Laravel API + backend-логіка адмінки
+/frontend     React SPA
+/docker       Dockerfiles та nginx-конфігурація
+/docs         Додаткова документація
+TODO.md       Покроковий план розробки
+README.md     Англійська документація
+README_UA.md  Українська документація
+```
 
 ## Документація
 
-- Архітектура: [docs/architecture.md](./docs/architecture.md)
-- Команди: [docs/commands.md](./docs/commands.md)
 - План розробки: [TODO.md](./TODO.md)
+- Нотатки по архітектурі: [docs/architecture.md](./docs/architecture.md)
+- Довідник команд: [docs/commands.md](./docs/commands.md)
 
----
+## Підхід до розробки
 
-## Примітки
+- Feature-based commits
+- Невеликі й тестовані кроки з `TODO.md`
+- Чіткі commit messages з ясним scope
 
-- Проєкт демонструє підхід до побудови систем
-- Основний акцент — структура та архітектура
-- Логіка спрощена для наочності
-
----
+Приклади:
+- `feat(users): add roles and permissions sync in API`
+- `fix(frontend): handle users fetch retry and empty states`
 
 ## Подальший розвиток
 
-- База даних
-- Ролі та доступи
-- Логування
-- Моніторинг
+- Додати повну API документацію (OpenAPI/Swagger)
+- Розширити e2e покриття SPA-сценаріїв
+- Додати фільтрацію/експорт audit-логів
+- Додати CI quality gates (lint + tests + build)
+- Завершити production deployment docs
 
 ## Ліцензія
 
-MIT License
-
-Див. файл [LICENSE](./LICENSE) для деталей.
+MIT License. Деталі у [LICENSE](./LICENSE).
