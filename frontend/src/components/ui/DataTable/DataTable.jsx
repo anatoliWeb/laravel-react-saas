@@ -15,6 +15,7 @@ function DataTable({
   columns,
   data,
   loading,
+  error = null,
   total,
   page,
   perPage,
@@ -28,9 +29,11 @@ function DataTable({
   permissions = [],
   filters = null,
   searchPlaceholder,
+  emptyMessage,
+  onRetry,
 }) {
   const { t } = useTranslation();
-  const rows = Array.isArray(data) ? data : [];
+  const rows = data ?? [];
 
   const visibleActions = useMemo(() => {
     // WHY:
@@ -63,13 +66,28 @@ function DataTable({
             {loading ? (
               <tr>
                 <td colSpan={columns.length + (visibleActions.length > 0 ? 1 : 0)} className="data-table__state">
-                  {t('loading')}
+                  <div className="data-table__loading-block">
+                    <span className="data-table__loading-shimmer" />
+                  </div>
                 </td>
               </tr>
-            ) : !rows.length ? (
+            ) : error ? (
               <tr>
                 <td colSpan={columns.length + (visibleActions.length > 0 ? 1 : 0)} className="data-table__state">
-                  {t('no_data')}
+                  <div className="data-table__status">
+                    <p className="data-table__status-text">{error || t('unexpected_error')}</p>
+                    {onRetry ? (
+                      <button type="button" className="data-table__retry-btn" onClick={onRetry}>
+                        {t('retry')}
+                      </button>
+                    ) : null}
+                  </div>
+                </td>
+              </tr>
+            ) : !Array.isArray(rows) || !rows.length ? (
+              <tr>
+                <td colSpan={columns.length + (visibleActions.length > 0 ? 1 : 0)} className="data-table__state">
+                  {emptyMessage || t('no_data')}
                 </td>
               </tr>
             ) : (

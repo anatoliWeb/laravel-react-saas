@@ -145,8 +145,8 @@
 ## Phase 9 - Logging & Stability
 
 - [x] Step 46: Add Laravel logging (errors, API calls)
-- [ ] Step 47: Add simple request logging middleware
-- [ ] Step 48: Handle edge cases (empty data, failures)
+- [x] Step 47: Add simple request logging middleware
+- [x] Step 48: Handle edge cases (empty data, failures)
 
 ---
 

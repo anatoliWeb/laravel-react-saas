@@ -49,6 +49,7 @@
   "save_changes": "Зберегти зміни",
   "cancel": "Скасувати",
   "field_required": "Це поле обов'язкове",
+  "retry": "Спробувати ще раз",
   "validation_error": "Помилка валідації",
   "unexpected_error": "Щось пішло не так"
 }

@@ -31,6 +31,7 @@ function UsersPage() {
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -60,39 +61,41 @@ function UsersPage() {
     setTitle(t('users'));
   }, [setTitle, t]);
 
+  const loadUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadError(null);
+      setIsRefreshing(true);
+
+      const response = await fetchUsers();
+
+      const payload = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.data)
+          ? response.data
+          : [];
+
+      setUsers(payload);
+    } catch (err) {
+      // WHY:
+      // Keep diagnostics in console for developers, but UI must stay localized
+      // and avoid exposing backend internals to end users.
+      console.error('Users fetch failed', err);
+      setLoadError(t('unexpected_error'));
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [setIsRefreshing, t]);
+
   useEffect(() => {
     if (hasFetched.current) {
       return;
     }
 
     hasFetched.current = true;
-
-    async function loadUsers() {
-      try {
-        setIsRefreshing(true);
-
-        const response = await fetchUsers();
-
-        const payload = Array.isArray(response)
-          ? response
-          : Array.isArray(response?.data)
-            ? response.data
-            : [];
-
-        setUsers(payload);
-      } catch (err) {
-        // WHY:
-        // Initial table load errors are logged for diagnostics.
-        // We do not expose raw API internals in page-level UI.
-        console.error('Users fetch failed', err);
-      } finally {
-        setLoading(false);
-        setIsRefreshing(false);
-      }
-    }
-
     loadUsers();
-  }, [setIsRefreshing]);
+  }, [loadUsers]);
 
   const filteredUsers = useMemo(() => {
     if (!search.trim()) {
@@ -427,6 +430,8 @@ function UsersPage() {
         columns={columns}
         data={paginatedUsers}
         loading={loading}
+        error={loadError}
+        onRetry={loadUsers}
         total={sortedUsers.length}
         page={page}
         perPage={perPage}
@@ -439,6 +444,7 @@ function UsersPage() {
         actions={actions}
         permissions={permissions}
         searchPlaceholder={t('search_users')}
+        emptyMessage={t('no_users')}
       />
 
       <Modal
