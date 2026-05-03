@@ -3,7 +3,6 @@
 namespace App\Observers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Observer for user lifecycle events.
@@ -29,13 +28,6 @@ class UserObserver
     public function created(User $user): void
     {
         // WHY:
-        // Internal log helps verify observer execution
-        // and diagnose issues in production
-        Log::info('UserObserver@created triggered', [
-            'user_id' => $user->id
-        ]);
-
-        // WHY:
         // Record structured audit event for system-wide tracking
         activity_log('user_created', 'User created', [
             'user_id' => $user->id,
@@ -57,11 +49,6 @@ class UserObserver
         // allowing us to log precise changes instead of full model state
         $changes = array_keys($user->getChanges());
 
-        Log::info('UserObserver@updated triggered', [
-            'user_id' => $user->id,
-            'changes' => $changes,
-        ]);
-
         // WHY:
         // Store only changed fields to keep logs concise and meaningful
         activity_log('user_updated', 'User updated', [
@@ -79,10 +66,6 @@ class UserObserver
      */
     public function deleted(User $user): void
     {
-        Log::info('UserObserver@deleted triggered', [
-            'user_id' => $user->id
-        ]);
-
         // WHY:
         // Preserve minimal identifying data after deletion
         // since model will no longer exist in database

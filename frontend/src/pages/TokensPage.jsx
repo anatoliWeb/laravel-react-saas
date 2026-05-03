@@ -114,9 +114,6 @@ function TokensPage() {
       setTokens(cachedTokens);
       setLoading(false);
       setIsRefreshingFromCache(true);
-    }
-
-    if (Array.isArray(cachedTokens) && cachedTokens.length > 0) {
       tokensRef.current = cachedTokens;
       loadTokens({ keepVisibleData: true });
       return;

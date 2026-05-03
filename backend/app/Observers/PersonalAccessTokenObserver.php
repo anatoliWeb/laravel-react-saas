@@ -2,7 +2,6 @@
 
 namespace App\Observers;
 
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 
 /**
@@ -29,13 +28,6 @@ class PersonalAccessTokenObserver
     public function created(PersonalAccessToken $token): void
     {
         // WHY:
-        // Internal log helps debug observer execution issues
-        // and ensures that observer is properly registered
-        Log::info('PersonalAccessTokenObserver@created triggered', [
-            'token_id' => $token->id
-        ]);
-
-        // WHY:
         // Centralized activity logging keeps audit records consistent
         // and allows future extensions (queues, external logging systems)
         activity_log('token_created', 'API token created', [
@@ -59,12 +51,6 @@ class PersonalAccessTokenObserver
      */
     public function deleted(PersonalAccessToken $token): void
     {
-        // WHY:
-        // Log observer trigger for debugging and traceability
-        Log::info('PersonalAccessTokenObserver@deleted triggered', [
-            'token_id' => $token->id
-        ]);
-
         // WHY:
         // Persist audit record of token removal
         // to maintain a full lifecycle history

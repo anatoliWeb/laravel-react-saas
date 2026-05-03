@@ -9,10 +9,7 @@ import { apiRequest } from './apiClient';
  */
 export function getTokens() {
   return apiRequest('/tokens')
-    .then((response) => response?.data ?? [])
-    .catch((error) => {
-      throw error;
-    });
+    .then((response) => response?.data ?? []);
 }
 
 export function createToken(payload) {
@@ -30,9 +27,6 @@ export function createToken(payload) {
       }
 
       return response;
-    })
-    .catch((error) => {
-      throw error;
     });
 }
 
@@ -40,8 +34,5 @@ export function deleteToken(tokenId) {
   return apiRequest(`/tokens/${tokenId}`, {
     method: 'DELETE',
   })
-    .then((response) => response?.data ?? response)
-    .catch((error) => {
-      throw error;
-    });
+    .then((response) => response?.data ?? response);
 }

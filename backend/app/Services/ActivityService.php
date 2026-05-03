@@ -33,12 +33,6 @@ class ActivityService
     public function write(?int $userId, string $action, ?string $description = null, array $meta = []): void
     {
         try {
-            Log::info('ActivityService::write called', [
-                'action' => $action,
-                'user_id' => $userId,
-                'has_activity_logs_table' => Schema::hasTable('activity_logs'),
-            ]);
-
             ActivityLog::create([
                 'user_id' => $userId,
                 'action' => $action,

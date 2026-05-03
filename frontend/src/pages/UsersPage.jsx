@@ -129,8 +129,6 @@ function UsersPage() {
       setUsers(cachedUsers);
       setLoading(false);
       setIsRefreshingFromCache(true);
-    }
-    if (Array.isArray(cachedUsers) && cachedUsers.length > 0) {
       usersRef.current = cachedUsers;
       loadUsers({ keepVisibleData: true });
       return;
