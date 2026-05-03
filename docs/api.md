@@ -94,7 +94,8 @@ Response:
       "id": 1,
       "name": "John",
       "email": "john@example.com",
-      "roles": ["admin"]
+      "roles": ["admin"],
+      "permissions": ["users.view", "users.edit"]
     }
   ]
 }
@@ -125,12 +126,8 @@ Response (`201 Created`):
     "id": 15,
     "name": "Jane",
     "email": "jane@example.com",
-    "roles": [
-      { "id": 1, "name": "admin" }
-    ],
-    "permissions": [
-      { "id": 2, "name": "users.edit" }
-    ]
+    "roles": ["admin"],
+    "permissions": ["users.view", "users.edit"]
   }
 }
 ```
@@ -148,9 +145,8 @@ Response:
     "id": 15,
     "name": "Jane",
     "email": "jane@example.com",
-    "roles": [
-      { "id": 1, "name": "admin" }
-    ]
+    "roles": ["admin"],
+    "permissions": ["users.view", "users.edit"]
   }
 }
 ```
@@ -180,12 +176,8 @@ Response:
     "id": 15,
     "name": "Jane Updated",
     "email": "jane.updated@example.com",
-    "roles": [
-      { "id": 2, "name": "manager" }
-    ],
-    "permissions": [
-      { "id": 1, "name": "users.view" }
-    ]
+    "roles": ["manager"],
+    "permissions": ["users.view"]
   }
 }
 ```

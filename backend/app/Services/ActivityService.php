@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\LogActivityJob;
 use App\Models\ActivityLog;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -16,12 +17,23 @@ use Throwable;
 class ActivityService
 {
     /**
-     * Log new activity.
+     * Queue new activity write operation.
      */
     public function log(?int $userId, string $action, ?string $description = null, array $meta = []): void
     {
+        LogActivityJob::dispatch($userId, $action, $description, $meta);
+    }
+
+    /**
+     * Persist activity record.
+     *
+     * WHY:
+     * This method is used by queue jobs so write behavior remains centralized.
+     */
+    public function write(?int $userId, string $action, ?string $description = null, array $meta = []): void
+    {
         try {
-            Log::info('ActivityService::log called', [
+            Log::info('ActivityService::write called', [
                 'action' => $action,
                 'user_id' => $userId,
                 'has_activity_logs_table' => Schema::hasTable('activity_logs'),
@@ -34,7 +46,7 @@ class ActivityService
                 'meta' => $meta,
             ]);
         } catch (Throwable $exception) {
-            Log::error('ActivityService::log failed', [
+            Log::error('ActivityService::write failed', [
                 'action' => $action,
                 'user_id' => $userId,
                 'error' => $exception->getMessage(),

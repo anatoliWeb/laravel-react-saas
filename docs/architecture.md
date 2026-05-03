@@ -124,8 +124,38 @@ Activity logging follows an event-driven auditing pattern:
 - `ActivityService` is the centralized logging entry point.
 - Model observers capture important model lifecycle events.
 - Logs are stored as an audit trail with action, actor, and metadata.
+- Write operations are dispatched to queue jobs for non-blocking API responses.
 
 This approach improves traceability and supports operational diagnostics and dashboard activity feeds.
+
+---
+
+## Queue System
+
+The system uses asynchronous background processing for non-critical write operations.
+
+- Queue backend: Redis
+- Job example: `LogActivityJob`
+- Activity queue: `activity` (named queue)
+- Worker runtime: Laravel `queue:work`
+- Process manager: Supervisor
+- Worker priority order: `--queue=activity,default`
+
+Queue separation strategy:
+- `activity`: audit trail and activity log writes
+- `default`: generic application jobs
+- planned queues: `notifications`, `realtime`
+
+Why this matters:
+- API responses stay fast because logging is processed out of request cycle.
+- Activity logging is isolated from future email/notification/realtime workloads.
+- Worker restarts are handled automatically by Supervisor.
+- Retry/timeout behavior is controlled in worker command flags.
+
+Scaling model:
+- Start with one worker handling `activity,default`.
+- Split workers by queue as load grows (for example dedicated `activity` and `notifications` workers).
+- This allows independent scaling per workload type without changing API contracts.
 
 ---
 

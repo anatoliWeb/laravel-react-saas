@@ -178,17 +178,17 @@ function UsersPage() {
         name: 'permissions',
         label: t('permissions'),
         type: 'permissions',
+        // WHY:
+        // Permissions provide fine-grained access control beyond roles.
+        // Roles define groups, permissions define exact capabilities.
         options: availablePermissions.map((permission) => ({
           value: permission.name,
           label: permission.name,
         })),
-        // WHY:
-        // UI must not expose direct-permission editing unless current
-        // operator has explicit rights for that sensitive action.
-        hidden: !can('users.edit_permissions', meta),
+        hidden: availablePermissions.length === 0,
       },
     ],
-    [roles, availablePermissions, meta, modalState.type, t],
+    [roles, availablePermissions, modalState.type, t],
   );
 
   const openCreateModal = () => {

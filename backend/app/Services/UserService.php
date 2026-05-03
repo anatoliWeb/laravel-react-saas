@@ -22,27 +22,39 @@ use Illuminate\Support\Facades\Hash;
 class UserService
 {
     /**
+     * Convert User model to stable API DTO shape.
+     *
+     * WHY:
+     * Frontend should receive one consistent contract across
+     * list/show/create/update responses.
+     */
+    protected function toDto(User $user): UserDTO
+    {
+        return new UserDTO(
+            $user->id,
+            $user->name,
+            $user->email,
+            $user->roles->pluck('name')->values()->all(),
+            $user->permissions->pluck('name')->values()->all(),
+        );
+    }
+
+    /**
      * Get all users as DTO collection.
      *
      * WHY:
      * DTO isolates API output from internal model structure
      * and prevents accidental data exposure (e.g. passwords, hidden fields).
      *
-     * @return array<int, UserDTO>
+     * @return array<int, array<string, mixed>>
      */
     public function getUsers(): array
     {
-        return User::with('roles')
+        return User::with(['roles:id,name', 'permissions:id,name'])
             ->get()
-            ->map(function ($user) {
-                return new UserDTO(
-                    $user->id,
-                    $user->name,
-                    $user->email,
-                    $user->roles->pluck('name')->toArray()
-                );
-            })
-            ->toArray();
+            ->map(fn (User $user) => $this->toDto($user)->toArray())
+            ->values()
+            ->all();
     }
 
     /**
@@ -54,14 +66,8 @@ class UserService
      */
     public function getUser(int $id): UserDTO
     {
-        $user = User::with('roles')->findOrFail($id);
-
-        return new UserDTO(
-            $user->id,
-            $user->name,
-            $user->email,
-            $user->roles->pluck('name')->toArray()
-        );
+        $user = User::with(['roles:id,name', 'permissions:id,name'])->findOrFail($id);
+        return $this->toDto($user);
     }
 
     /**
@@ -71,9 +77,10 @@ class UserService
      * Used internally (e.g. admin forms) where full model access is required.
      * Loads only necessary fields to optimize query performance.
      */
-    public function getById(int $id): User
+    public function getById(int $id): array
     {
-        return User::with('roles:id,name')->findOrFail($id);
+        $user = User::with(['roles:id,name', 'permissions:id,name'])->findOrFail($id);
+        return $this->toDto($user)->toArray();
     }
 
     /**
@@ -87,7 +94,7 @@ class UserService
      *
      * Keeps all user creation logic centralized.
      */
-    public function create(array $data): User
+    public function create(array $data): array
     {
         // WHY:
         // Password must always be hashed before storing
@@ -111,7 +118,9 @@ class UserService
 
         // WHY:
         // Reload relations to return fresh state to API
-        return $user->load('roles:id,name', 'permissions:id,name');
+        return $this->toDto(
+            $user->load('roles:id,name', 'permissions:id,name')
+        )->toArray();
     }
 
     /**
@@ -122,7 +131,7 @@ class UserService
      * - password updated only if provided
      * - roles and permissions are fully synchronized
      */
-    public function update(int $id, array $data): User
+    public function update(int $id, array $data): array
     {
         $user = User::findOrFail($id);
 
@@ -151,7 +160,9 @@ class UserService
             Permission::whereIn('name', $data['permissions'] ?? [])->pluck('id')
         );
 
-        return $user->load('roles:id,name', 'permissions:id,name');
+        return $this->toDto(
+            $user->load('roles:id,name', 'permissions:id,name')
+        )->toArray();
     }
 
     /**

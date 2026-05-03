@@ -21,6 +21,25 @@ services:
       - mysql
       - redis
 
+  queue-worker:
+    build:
+      context: ./docker/php
+    container_name: saas_queue_worker
+    working_dir: /var/www/backend
+    volumes:
+      - ./backend:/var/www/backend
+      - ./docker/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+    command: >
+      sh -c "
+      mkdir -p /var/log/supervisor &&
+      supervisord -c /etc/supervisor/conf.d/supervisord.conf
+      "
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+
   nginx:
     image: nginx:1.27-alpine
     container_name: saas_nginx
