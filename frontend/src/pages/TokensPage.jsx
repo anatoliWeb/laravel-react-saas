@@ -24,8 +24,8 @@ function TokensPage() {
   const { meta } = useMeta();
 
   const [tokens, setTokens] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [tableErrorMessage, setTableErrorMessage] = useState(null);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({ name: '' });
@@ -58,14 +58,14 @@ function TokensPage() {
 
     if (!canViewTokens) {
       setTokens([]);
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
 
     try {
       const hasRowsVisible = keepVisibleData || tokensRef.current.length > 0;
-      setLoading(!hasRowsVisible);
-      setLoadError(null);
+      setIsLoading(!hasRowsVisible);
+      setTableErrorMessage(null);
       setIsRefreshing(true);
       if (hasRowsVisible) {
         setIsRefreshingFromCache(true);
@@ -81,12 +81,12 @@ function TokensPage() {
     } catch (err) {
       console.error('Tokens fetch failed', err);
       if (err?.response?.status === 403) {
-        setLoadError(t('no_access'));
+        setTableErrorMessage(t('no_access'));
       } else {
-        setLoadError(t('unexpected_error'));
+        setTableErrorMessage(t('unexpected_error'));
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
       setIsRefreshing(false);
       setIsRefreshingFromCache(false);
     }
@@ -112,7 +112,7 @@ function TokensPage() {
       // Show cached data immediately for fast back-navigation UX,
       // then revalidate in background to keep data fresh.
       setTokens(cachedTokens);
-      setLoading(false);
+      setIsLoading(false);
       setIsRefreshingFromCache(true);
       tokensRef.current = cachedTokens;
       loadTokens({ keepVisibleData: true });
@@ -180,9 +180,9 @@ function TokensPage() {
           } catch (err) {
             console.error('Token delete failed', err);
             if (err?.response?.status === 403) {
-              setLoadError(t('no_access'));
+              setTableErrorMessage(t('no_access'));
             } else {
-              setLoadError(t('unexpected_error'));
+              setTableErrorMessage(t('unexpected_error'));
             }
           } finally {
             hideLoading();
@@ -268,8 +268,8 @@ function TokensPage() {
       <DataTable
         columns={columns}
         data={filteredTokens}
-        loading={loading}
-        error={loadError}
+        loading={isLoading}
+        error={tableErrorMessage}
         onRetry={loadTokens}
         total={filteredTokens.length}
         page={1}

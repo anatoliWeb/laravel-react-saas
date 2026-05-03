@@ -31,8 +31,8 @@ function UsersPage() {
   const { showLoading, hideLoading } = useLoading();
 
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [tableErrorMessage, setTableErrorMessage] = useState(null);
   const [isRefreshingFromCache, setIsRefreshingFromCache] = useState(false);
 
   const [search, setSearch] = useState('');
@@ -62,6 +62,8 @@ function UsersPage() {
   const availablePermissions = meta?.permissions || [];
   const currentUserId = meta?.current_user?.id ?? null;
   // WHY:
+  // Consistent naming improves readability and maintainability across the project.
+  // WHY:
   // Keep role assignment policy configurable from one place
   // without changing form component internals.
   const ALLOW_MULTIPLE_ROLES = false;
@@ -81,8 +83,8 @@ function UsersPage() {
       const hasRowsVisible = keepVisibleData || usersRef.current.length > 0;
       // WHY:
       // Keep existing rows visible during background refresh to avoid flicker.
-      setLoading(!hasRowsVisible);
-      setLoadError(null);
+      setIsLoading(!hasRowsVisible);
+      setTableErrorMessage(null);
       setIsRefreshing(true);
       if (hasRowsVisible) {
         setIsRefreshingFromCache(true);
@@ -108,9 +110,9 @@ function UsersPage() {
       // Keep diagnostics in console for developers, but UI must stay localized
       // and avoid exposing backend internals to end users.
       console.error('Users fetch failed', err);
-      setLoadError(t('unexpected_error'));
+      setTableErrorMessage(t('unexpected_error'));
     } finally {
-      setLoading(false);
+      setIsLoading(false);
       setIsRefreshing(false);
       setIsRefreshingFromCache(false);
     }
@@ -127,7 +129,7 @@ function UsersPage() {
       // WHY:
       // Show cached table rows instantly on page revisit, then refresh in background.
       setUsers(cachedUsers);
-      setLoading(false);
+      setIsLoading(false);
       setIsRefreshingFromCache(true);
       usersRef.current = cachedUsers;
       loadUsers({ keepVisibleData: true });
@@ -692,8 +694,8 @@ function UsersPage() {
       <DataTable
         columns={columns}
         data={paginatedUsers}
-        loading={loading}
-        error={loadError}
+        loading={isLoading}
+        error={tableErrorMessage}
         onRetry={loadUsers}
         total={sortedUsers.length}
         page={page}

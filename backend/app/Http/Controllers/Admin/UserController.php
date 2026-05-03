@@ -41,7 +41,7 @@ class UserController extends Controller
     public function index()
     {
         try {
-            $users = $this->userService->getUsers();
+            $users = $this->userService->getUsersForAdmin();
 
             return view('admin.users.index', [
                 'users' => $users

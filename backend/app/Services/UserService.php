@@ -49,13 +49,21 @@ class UserService
      *
      * @return array<int, array<string, mixed>>
      */
-    public function getUsers(): array
+    public function getUsersForApi(): array
     {
         return User::with(['roles:id,name', 'permissions:id,name', 'deniedPermissions:id,name'])
             ->get()
             ->map(fn (User $user) => $this->toDto($user))
             ->values()
             ->all();
+    }
+
+    /**
+     * Backward-compatible alias for existing calls.
+     */
+    public function getUsers(): array
+    {
+        return $this->getUsersForApi();
     }
 
     /**
@@ -69,6 +77,19 @@ class UserService
     {
         $user = User::with(['roles:id,name', 'permissions:id,name', 'deniedPermissions:id,name'])->findOrFail($id);
         return $this->toDto($user);
+    }
+
+    /**
+     * Get users list for Blade admin pages.
+     *
+     * WHY:
+     * Consistent naming improves readability and maintainability across the project.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getUsersForAdmin(): array
+    {
+        return $this->getUsersForApi();
     }
 
     /**

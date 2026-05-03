@@ -42,7 +42,7 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = $this->userService->getUsers();
+        $users = $this->userService->getUsersForApi();
 
         return response()->json([
             'data' => $users, // service already should return proper structure
