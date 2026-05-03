@@ -162,8 +162,8 @@
 ## Phase 11 - Polish & Portfolio Ready
 
 - [x] Step 53: Clean code and remove debug logs
-- [ ] Step 54: Ensure consistent naming
-- [ ] Step 55: Review commit history (clean, logical steps)
+- [x] Step 54: Ensure consistent naming
+- [x] Step 55: Review commit history (clean, logical steps)
 - [ ] Step 56: Add screenshots (optional)
 - [ ] Step 57: Final test (fresh docker-compose up)
 - [ ] Step 58: Publish repository
