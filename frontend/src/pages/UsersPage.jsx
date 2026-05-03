@@ -8,6 +8,7 @@ import Form from '../components/ui/Form/Form';
 import { useMeta } from '../hooks/useMeta';
 import { can } from '../utils/permissions';
 import { useLoading } from '../contexts/LoadingContext';
+import { getCache, isDataDifferent, setCache } from '../utils/cache';
 
 function normalizeRoleNames(roles = []) {
   if (!Array.isArray(roles) || roles.length === 0) {
@@ -32,6 +33,7 @@ function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
+  const [isRefreshingFromCache, setIsRefreshingFromCache] = useState(false);
 
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -42,30 +44,49 @@ function UsersPage() {
   // StrictMode can trigger effect twice in development.
   // This guard prevents duplicate initial fetches and noisy UI flicker.
   const hasFetched = useRef(false);
+  const usersRef = useRef([]);
+  const USERS_CACHE_KEY = 'users_table_rows';
+  const USERS_CACHE_TTL_MS = 60_000;
   const [modalState, setModalState] = useState({ type: null, user: null });
-  const [formValues, setFormValues] = useState({ name: '', email: '', password: '', roles: [], permissions: [] });
+  const [formValues, setFormValues] = useState({ name: '', email: '', password: '', roles: [], permissions: [], denied_permissions: [] });
   const [formErrors, setFormErrors] = useState({});
   const [formErrorMessage, setFormErrorMessage] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [deniedPermissions, setDeniedPermissions] = useState([]);
+  const [manuallyAddedPermissions, setManuallyAddedPermissions] = useState([]);
+  const [manuallyRemovedPermissions, setManuallyRemovedPermissions] = useState([]);
   const { meta } = useMeta();
   const roles = meta?.roles || [];
   const permissions = meta?.current_user_permissions || [];
   const availablePermissions = meta?.permissions || [];
+  const currentUserId = meta?.current_user?.id ?? null;
   // WHY:
   // Keep role assignment policy configurable from one place
   // without changing form component internals.
   const ALLOW_MULTIPLE_ROLES = false;
 
   useEffect(() => {
+    usersRef.current = users;
+  }, [users]);
+
+  useEffect(() => {
     setTitle(t('users'));
   }, [setTitle, t]);
 
-  const loadUsers = useCallback(async () => {
+  const loadUsers = useCallback(async (options = {}) => {
+    const { keepVisibleData = false } = options;
+
     try {
-      setLoading(true);
+      const hasRowsVisible = keepVisibleData || usersRef.current.length > 0;
+      // WHY:
+      // Keep existing rows visible during background refresh to avoid flicker.
+      setLoading(!hasRowsVisible);
       setLoadError(null);
       setIsRefreshing(true);
+      if (hasRowsVisible) {
+        setIsRefreshingFromCache(true);
+      }
 
       const response = await fetchUsers();
 
@@ -75,7 +96,13 @@ function UsersPage() {
           ? response.data
           : [];
 
-      setUsers(payload);
+      // WHY:
+      // State is only updated when data changes to prevent unnecessary re-renders.
+      if (isDataDifferent(usersRef.current, payload)) {
+        setUsers(payload);
+        usersRef.current = payload;
+      }
+      setCache(USERS_CACHE_KEY, payload, USERS_CACHE_TTL_MS);
     } catch (err) {
       // WHY:
       // Keep diagnostics in console for developers, but UI must stay localized
@@ -85,6 +112,7 @@ function UsersPage() {
     } finally {
       setLoading(false);
       setIsRefreshing(false);
+      setIsRefreshingFromCache(false);
     }
   }, [setIsRefreshing, t]);
 
@@ -94,6 +122,20 @@ function UsersPage() {
     }
 
     hasFetched.current = true;
+    const cachedUsers = getCache(USERS_CACHE_KEY);
+    if (Array.isArray(cachedUsers) && cachedUsers.length > 0) {
+      // WHY:
+      // Show cached table rows instantly on page revisit, then refresh in background.
+      setUsers(cachedUsers);
+      setLoading(false);
+      setIsRefreshingFromCache(true);
+    }
+    if (Array.isArray(cachedUsers) && cachedUsers.length > 0) {
+      usersRef.current = cachedUsers;
+      loadUsers({ keepVisibleData: true });
+      return;
+    }
+
     loadUsers();
   }, [loadUsers]);
 
@@ -154,6 +196,66 @@ function UsersPage() {
     [t],
   );
 
+  const rolesPermissionsMap = useMemo(() => {
+    // WHY:
+    // Role permissions are driven by backend to keep RBAC logic consistent
+    // and avoid hardcoded mappings in UI.
+    if (meta?.role_permissions && typeof meta.role_permissions === 'object') {
+      return meta.role_permissions;
+    }
+
+    if (meta?.rolesPermissions && typeof meta.rolesPermissions === 'object') {
+      return meta.rolesPermissions;
+    }
+
+    if (meta?.roles_permissions && typeof meta.roles_permissions === 'object') {
+      return meta.roles_permissions;
+    }
+
+    // Fallback for shape where roles include nested permissions.
+    if (Array.isArray(meta?.roles)) {
+      return meta.roles.reduce((acc, role) => {
+        const roleName = role?.name;
+        if (!roleName) {
+          return acc;
+        }
+
+        const permissionNames = Array.isArray(role?.permissions)
+          ? role.permissions.map((permission) => (typeof permission === 'string' ? permission : permission?.name)).filter(Boolean)
+          : [];
+
+        acc[roleName] = permissionNames;
+        return acc;
+      }, {});
+    }
+
+    return {};
+  }, [meta]);
+
+  const getRoleDefaultPermissions = useCallback((roleNames) => {
+    const defaultPermissions = roleNames.flatMap((roleName) => rolesPermissionsMap[roleName] || []);
+    return [...new Set(defaultPermissions)];
+  }, [rolesPermissionsMap]);
+
+  const computeEffectivePermissions = useCallback((roleNames, addedPermissions, removedPermissions, deniedPermissionNames = []) => {
+    const roleDefaults = getRoleDefaultPermissions(roleNames);
+    const removedSet = new Set(removedPermissions);
+    const deniedSet = new Set(deniedPermissionNames);
+
+    const fromRoles = roleDefaults.filter((permissionName) => !removedSet.has(permissionName));
+
+    const merged = [...new Set([...fromRoles, ...addedPermissions])];
+    return merged.filter((permissionName) => !deniedSet.has(permissionName));
+  }, [getRoleDefaultPermissions]);
+
+  const roleDerivedPermissionsForUi = useMemo(() => (
+    getRoleDefaultPermissions(selectedRoles)
+      .filter((permissionName) => !manuallyRemovedPermissions.includes(permissionName))
+  ), [getRoleDefaultPermissions, manuallyRemovedPermissions, selectedRoles]);
+  const isEditingSelf = modalState.type === 'edit'
+    && modalState.user
+    && Number(modalState.user.id) === Number(currentUserId);
+
   const formSchema = useMemo(
     () => [
       { name: 'name', label: t('name'), type: 'text', required: true, requiredMessage: t('field_required') },
@@ -173,6 +275,10 @@ function UsersPage() {
         required: true,
         requiredMessage: t('field_required'),
         options: roles.map((role) => ({ value: role.name, label: role.name })),
+        // WHY:
+        // Security rule: user must not be able to remove own critical permissions.
+        // We prevent self-editing of RBAC fields in UI to avoid accidental lockout.
+        disabled: isEditingSelf,
       },
       {
         name: 'permissions',
@@ -185,22 +291,40 @@ function UsersPage() {
           value: permission.name,
           label: permission.name,
         })),
+        roleDerivedPermissions: roleDerivedPermissionsForUi,
+        manualPermissions: manuallyAddedPermissions,
+        removedPermissions: manuallyRemovedPermissions,
+        deniedPermissions,
+        disabled: isEditingSelf,
         hidden: availablePermissions.length === 0,
       },
     ],
-    [roles, availablePermissions, modalState.type, t],
+    [
+      roles,
+      availablePermissions,
+      modalState.type,
+      t,
+      roleDerivedPermissionsForUi,
+      manuallyAddedPermissions,
+      manuallyRemovedPermissions,
+      deniedPermissions,
+      isEditingSelf,
+    ],
   );
 
   const openCreateModal = () => {
-    setFormValues({ name: '', email: '', password: '', roles: [], permissions: [] });
+    setFormValues({ name: '', email: '', password: '', roles: [], permissions: [], denied_permissions: [] });
     setSelectedRoles([]);
     setSelectedPermissions([]);
+    setDeniedPermissions([]);
+    setManuallyAddedPermissions([]);
+    setManuallyRemovedPermissions([]);
     setFormErrors({});
     setFormErrorMessage(null);
     setModalState({ type: 'create', user: null });
   };
 
-  const openEditModal = (user) => {
+  const openEditModal = useCallback((user) => {
     const roleNamesFromUser = Array.isArray(user.roles)
       ? user.roles
         .map((role) => {
@@ -220,20 +344,47 @@ function UsersPage() {
     const directPermissionNames = Array.isArray(user.permissions)
       ? user.permissions.map((permission) => (typeof permission === 'string' ? permission : permission.name))
       : [];
+    const deniedPermissionNames = Array.isArray(user.denied_permissions)
+      ? user.denied_permissions.map((permission) => (typeof permission === 'string' ? permission : permission.name))
+      : [];
+
+    const roleDefaultPermissions = getRoleDefaultPermissions(roleNamesFromUser);
+    const roleDefaultSet = new Set(roleDefaultPermissions);
+
+    // WHY:
+    // In edit mode, permissions come from two sources:
+    // 1. roles (default)
+    // 2. manual overrides
+    // We separate them to give clear UX and avoid accidental permission loss.
+    // WHY:
+    // Denied permissions override both role-based and manually added permissions,
+    // giving full control over access restrictions.
+    const initialManuallyAdded = directPermissionNames.filter((permissionName) => !roleDefaultSet.has(permissionName));
+    const initialManuallyRemoved = [];
+    const initialFinalPermissions = computeEffectivePermissions(
+      roleNamesFromUser,
+      initialManuallyAdded,
+      initialManuallyRemoved,
+      deniedPermissionNames,
+    );
 
     setFormValues({
       name: user.name || '',
       email: user.email || '',
       password: '',
       roles: roleNamesFromUser,
-      permissions: directPermissionNames,
+      permissions: initialFinalPermissions,
+      denied_permissions: deniedPermissionNames,
     });
     setSelectedRoles(roleNamesFromUser);
-    setSelectedPermissions(directPermissionNames);
+    setSelectedPermissions(initialFinalPermissions);
+    setDeniedPermissions(deniedPermissionNames);
+    setManuallyAddedPermissions(initialManuallyAdded);
+    setManuallyRemovedPermissions(initialManuallyRemoved);
     setFormErrors({});
     setFormErrorMessage(null);
     setModalState({ type: 'edit', user });
-  };
+  }, [computeEffectivePermissions, getRoleDefaultPermissions]);
 
   const openDeleteModal = (user) => {
     setModalState({ type: 'delete', user });
@@ -243,17 +394,114 @@ function UsersPage() {
     setModalState({ type: null, user: null });
     setSelectedRoles([]);
     setSelectedPermissions([]);
+    setDeniedPermissions([]);
+    setManuallyAddedPermissions([]);
+    setManuallyRemovedPermissions([]);
     setFormErrors({});
     setFormErrorMessage(null);
   };
 
   const handleFormChange = (name, value) => {
+    if ((name === 'roles' || name === 'permissions') && isEditingSelf) {
+      return;
+    }
+
     if (name === 'roles') {
-      setSelectedRoles(value);
+      const nextRoles = Array.isArray(value) ? value : [];
+      setSelectedRoles(nextRoles);
+
+      const nextEffectivePermissions = computeEffectivePermissions(
+        nextRoles,
+        manuallyAddedPermissions,
+        manuallyRemovedPermissions,
+        deniedPermissions,
+      );
+
+      setSelectedPermissions(nextEffectivePermissions);
+      setFormValues((prev) => ({ ...prev, roles: nextRoles, permissions: nextEffectivePermissions, denied_permissions: deniedPermissions }));
+      setFormErrors((prev) => ({ ...prev, [name]: null }));
+      return;
     }
 
     if (name === 'permissions') {
-      setSelectedPermissions(value);
+      const nextPermissions = Array.isArray(value) ? value : [];
+      const roleDefaults = getRoleDefaultPermissions(selectedRoles);
+      const roleDefaultsSet = new Set(roleDefaults);
+      const previousSelectedSet = new Set(selectedPermissions);
+      const deniedSet = new Set(deniedPermissions);
+
+      const manuallyAddedSet = new Set(manuallyAddedPermissions);
+      const manuallyRemovedSet = new Set(manuallyRemovedPermissions);
+
+      // WHY:
+      // RBAC permissions come from roles but must allow manual override,
+      // including removing inherited permissions.
+      availablePermissions.forEach((permission) => {
+        const permissionName = permission.name;
+        const wasSelected = previousSelectedSet.has(permissionName);
+        const isSelectedNow = nextPermissions.includes(permissionName);
+        const wasDenied = deniedSet.has(permissionName);
+
+        if (wasDenied && !isSelectedNow) {
+          return;
+        }
+
+        if (wasDenied && isSelectedNow) {
+          deniedSet.delete(permissionName);
+        }
+
+        if (!wasDenied && wasSelected && !isSelectedNow) {
+          deniedSet.add(permissionName);
+
+          if (roleDefaultsSet.has(permissionName)) {
+            manuallyRemovedSet.add(permissionName);
+          } else {
+            manuallyAddedSet.delete(permissionName);
+          }
+          return;
+        }
+
+        if (wasSelected === isSelectedNow && !wasDenied) {
+          return;
+        }
+
+        if (isSelectedNow) {
+          if (roleDefaultsSet.has(permissionName)) {
+            manuallyRemovedSet.delete(permissionName);
+          } else {
+            manuallyAddedSet.add(permissionName);
+          }
+          return;
+        }
+
+        if (roleDefaultsSet.has(permissionName)) {
+          manuallyRemovedSet.add(permissionName);
+        } else {
+          manuallyAddedSet.delete(permissionName);
+        }
+      });
+
+      const nextManuallyAdded = [...manuallyAddedSet];
+      const nextManuallyRemoved = [...manuallyRemovedSet];
+      const nextDeniedPermissions = [...deniedSet];
+      const nextEffectivePermissions = computeEffectivePermissions(
+        selectedRoles,
+        nextManuallyAdded,
+        nextManuallyRemoved,
+        nextDeniedPermissions,
+      );
+
+      setDeniedPermissions(nextDeniedPermissions);
+      setManuallyAddedPermissions(nextManuallyAdded);
+      setManuallyRemovedPermissions(nextManuallyRemoved);
+      setSelectedPermissions(nextEffectivePermissions);
+      setFormValues((prev) => ({
+        ...prev,
+        permissions: nextEffectivePermissions,
+        denied_permissions: nextDeniedPermissions,
+      }));
+      setFormErrors((prev) => ({ ...prev, [name]: null }));
+      return;
     }
 
     setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -293,6 +541,7 @@ function UsersPage() {
       .filter(Boolean)
       .map((roleId) => Number(roleId)),
     permissions: selectedPermissions.length ? selectedPermissions : values.permissions || [],
+    denied_permissions: deniedPermissions.length ? deniedPermissions : values.denied_permissions || [],
   });
 
   const handleSubmitForm = async (values) => {
@@ -308,7 +557,11 @@ function UsersPage() {
         const created = await createUser(payload);
         const user = created?.data || created;
         if (user && user.id) {
-          setUsers((prev) => [user, ...prev]);
+          setUsers((prev) => {
+            const next = [user, ...prev];
+            setCache(USERS_CACHE_KEY, next, USERS_CACHE_TTL_MS);
+            return next;
+          });
         }
         closeModal();
       } catch (submitError) {
@@ -327,13 +580,17 @@ function UsersPage() {
         const updated = await updateUser(modalState.user.id, payload);
         const updatedUser = updated?.data || updated;
 
-        setUsers((prev) => prev.map((user) => {
-          if (user.id !== modalState.user.id) {
-            return user;
-          }
+        setUsers((prev) => {
+          const next = prev.map((user) => {
+            if (user.id !== modalState.user.id) {
+              return user;
+            }
 
-          return updatedUser && updatedUser.id ? updatedUser : { ...user, ...payload };
-        }));
+            return updatedUser && updatedUser.id ? updatedUser : { ...user, ...payload };
+          });
+          setCache(USERS_CACHE_KEY, next, USERS_CACHE_TTL_MS);
+          return next;
+        });
         closeModal();
       } catch (submitError) {
         applySubmitError(submitError);
@@ -351,7 +608,11 @@ function UsersPage() {
     try {
       showLoading('Deleting user...');
       await deleteUser(modalState.user.id);
-      setUsers((prev) => prev.filter((user) => user.id !== modalState.user.id));
+      setUsers((prev) => {
+        const next = prev.filter((user) => user.id !== modalState.user.id);
+        setCache(USERS_CACHE_KEY, next, USERS_CACHE_TTL_MS);
+        return next;
+      });
       closeModal();
     } catch (submitError) {
       const errorData = submitError?.response?.data || submitError?.data;
@@ -385,7 +646,7 @@ function UsersPage() {
         onClick: openDeleteModal,
       },
     ],
-    [t],
+    [openEditModal, t],
   );
 
   const scrollToTable = () => {
@@ -418,6 +679,10 @@ function UsersPage() {
 
   return (
     <section ref={tableRef}>
+      {isRefreshingFromCache ? (
+        <p className="data-table__status-text">{t('table_refreshing_cached')}</p>
+      ) : null}
+
       {canCreate ? (
         <div className="users-page__actions">
           <button type="button" className="form__btn form__btn--primary" onClick={openCreateModal}>

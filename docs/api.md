@@ -95,7 +95,8 @@ Response:
       "name": "John",
       "email": "john@example.com",
       "roles": ["admin"],
-      "permissions": ["users.view", "users.edit"]
+      "permissions": ["users.view", "users.edit"],
+      "denied_permissions": ["users.delete"]
     }
   ]
 }
@@ -114,7 +115,8 @@ Request body:
   "email": "jane@example.com",
   "password": "secret123",
   "roles": [1],
-  "permissions": ["users.view", "users.edit"]
+  "permissions": ["users.view", "users.edit"],
+  "denied_permissions": ["users.delete"]
 }
 ```
 
@@ -127,7 +129,8 @@ Response (`201 Created`):
     "name": "Jane",
     "email": "jane@example.com",
     "roles": ["admin"],
-    "permissions": ["users.view", "users.edit"]
+    "permissions": ["users.view", "users.edit"],
+    "denied_permissions": ["users.delete"]
   }
 }
 ```
@@ -146,7 +149,8 @@ Response:
     "name": "Jane",
     "email": "jane@example.com",
     "roles": ["admin"],
-    "permissions": ["users.view", "users.edit"]
+    "permissions": ["users.view", "users.edit"],
+    "denied_permissions": ["users.delete"]
   }
 }
 ```
@@ -164,7 +168,8 @@ Request body:
   "email": "jane.updated@example.com",
   "password": "optional-new-password",
   "roles": [2],
-  "permissions": ["users.view"]
+  "permissions": ["users.view"],
+  "denied_permissions": ["users.edit"]
 }
 ```
 
@@ -177,7 +182,8 @@ Response:
     "name": "Jane Updated",
     "email": "jane.updated@example.com",
     "roles": ["manager"],
-    "permissions": ["users.view"]
+    "permissions": ["users.view"],
+    "denied_permissions": ["users.edit"]
   }
 }
 ```

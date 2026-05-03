@@ -10,16 +10,16 @@
 @endsection
 
 @section('content')
-    <header class="page-header">
-        <div>
-            <h1 class="page-title">Permissions</h1>
-            <p class="page-subtitle">Access control capabilities used by roles and users.</p>
-        </div>
+    <x-page-header
+        title="Permissions"
+        subtitle="Access control capabilities used by roles and users."
+    >
+        <x-slot:actions>
+            <a href="{{ route('admin.permissions.create') }}" class="c-btn c-btn--primary">Add Permission</a>
+        </x-slot:actions>
+    </x-page-header>
 
-        <a href="{{ route('admin.permissions.create') }}" class="c-btn c-btn--primary">Add Permission</a>
-    </header>
-
-    <section class="c-table-wrap">
+    <x-card>
         <table class="c-table">
             <thead>
             <tr>
@@ -28,15 +28,23 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($permissions as $permission)
+            @forelse($permissions as $permission)
+                    <tr>
+                        <td>{{ $permission->name }}</td>
+                        <td class="c-table__actions">
+                            <x-actions>
+                                <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="c-btn c-btn--ghost">Edit</a>
+                            </x-actions>
+                        </td>
+                    </tr>
+            @empty
                 <tr>
-                    <td>{{ $permission->name }}</td>
-                    <td class="c-table__actions">
-                        <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="c-btn c-btn--ghost">Edit</a>
+                    <td colspan="2">
+                        <div class="c-empty">No data available</div>
                     </td>
                 </tr>
-            @endforeach
+            @endforelse
             </tbody>
         </table>
-    </section>
+    </x-card>
 @endsection

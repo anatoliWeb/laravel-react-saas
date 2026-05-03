@@ -64,6 +64,12 @@ class StoreUserRequest extends FormRequest
             // beyond roles (advanced RBAC usage)
             'permissions' => ['sometimes', 'array'],
             'permissions.*' => ['exists:permissions,name'],
+
+            // WHY:
+            // Denied permissions explicitly block capabilities even if they
+            // come from roles or direct permissions.
+            'denied_permissions' => ['sometimes', 'array'],
+            'denied_permissions.*' => ['exists:permissions,name'],
         ];
     }
 }

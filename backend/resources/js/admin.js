@@ -35,3 +35,8 @@ document.querySelectorAll('.activity-item').forEach(item => {
 });
 
 document.addEventListener('DOMContentLoaded', initAdminSidebar);
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.c-alert').forEach((el) => el.remove());
+  }, 3000);
+});

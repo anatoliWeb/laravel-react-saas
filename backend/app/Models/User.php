@@ -118,4 +118,9 @@ class User extends Authenticatable
     {
         return $this->hasRole('admin');
     }
+
+    public function deniedPermissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_denied_permissions');
+    }
 }

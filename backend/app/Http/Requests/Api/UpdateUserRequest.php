@@ -75,6 +75,12 @@ class UpdateUserRequest extends FormRequest
             // independent of roles (advanced RBAC scenario)
             'permissions' => ['sometimes', 'array'],
             'permissions.*' => ['exists:permissions,name'],
+
+            // WHY:
+            // Denied permissions override inherited/direct grants and provide
+            // explicit access restrictions.
+            'denied_permissions' => ['sometimes', 'array'],
+            'denied_permissions.*' => ['exists:permissions,name'],
         ];
     }
 }

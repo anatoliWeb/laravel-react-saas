@@ -19,17 +19,25 @@ class MetaService
     {
         /** @var User|null $user */
         $user = auth()->user();
+        $roles = Role::query()
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        $permissions = Permission::query()
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
 
         return [
-            'roles' => Role::query()
-                ->select('id', 'name')
-                ->orderBy('name')
-                ->get(),
+            'roles' => $roles,
 
-            'permissions' => Permission::query()
-                ->select('id', 'name')
-                ->orderBy('name')
-                ->get(),
+            'permissions' => $permissions,
+
+            // WHY:
+            // Frontend needs role → permissions mapping to correctly
+            // display and auto-apply RBAC logic without duplicating business rules.
+            'role_permissions' => $this->getRolePermissionsMap(),
 
             'current_user' => $user ? [
                 'id' => $user->id,
@@ -69,5 +77,25 @@ class MetaService
             ...$directPermissions,
             ...$rolePermissions,
         ]));
+    }
+
+    /**
+     * Get role => permissions mapping for frontend RBAC auto-sync.
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function getRolePermissionsMap(): array
+    {
+        return Role::with('permissions:id,name')
+            ->get()
+            ->mapWithKeys(function (Role $role) {
+                return [
+                    $role->name => $role->permissions
+                        ->pluck('name')
+                        ->values()
+                        ->all(),
+                ];
+            })
+            ->all();
     }
 }

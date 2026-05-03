@@ -51,5 +51,19 @@
     "field_required":  "Dieses Feld ist erforderlich",
     "retry": "Erneut versuchen",
     "validation_error": "Validierungsfehler",
-    "unexpected_error": "Etwas ist schief gelaufen"
+    "unexpected_error": "Etwas ist schief gelaufen",
+    "no_access": "Sie haben keinen Zugriff auf diese Seite",
+    "no_tokens": "Keine Tokens gefunden",
+    "search_tokens": "Tokens suchen...",
+    "create_token": "Token erstellen",
+    "creating_token": "Token wird erstellt...",
+    "deleting_token": "Token wird geloscht...",
+    "token_owner": "Besitzer",
+    "created_at": "Erstellt am",
+    "token_value": "Token-Wert (einmalig angezeigt)",
+    "token_created_no_secret": "Token erstellt. Der geheime Wert wurde von der API nicht zuruckgegeben.",
+    "copy_token_now": "Kopieren Sie Ihr Token jetzt. Sie sehen es nicht erneut.",
+    "confirm_delete_token": "Mochten Sie dieses Token wirklich loschen?",
+    "tokens_refreshing_cached": "Zwischengespeicherte Tokens werden angezeigt, Aktualisierung lauft...",
+    "table_refreshing_cached": "Zwischengespeicherte Daten werden angezeigt, Aktualisierung lauft..."
 }

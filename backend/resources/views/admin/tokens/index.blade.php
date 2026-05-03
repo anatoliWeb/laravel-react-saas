@@ -10,37 +10,32 @@
 @endsection
 
 @section('content')
-    <header class="page-header">
-        <div>
-            <h1 class="page-title">API Tokens</h1>
-            <p class="page-subtitle">Create and revoke personal access tokens.</p>
-        </div>
-    </header>
-
-    @if(session('success'))
-        <div class="c-alert c-alert--success">{{ session('success') }}</div>
-    @endif
+    <x-page-header
+        title="API Tokens"
+        subtitle="Create and revoke personal access tokens."
+    />
 
     @if ($errors->any())
-        <div class="c-alert c-alert--error">
+        <x-alert type="error">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
-        </div>
+        </x-alert>
     @endif
 
     @if(session('token'))
-        <div class="c-alert c-alert--success">
+        <x-alert type="success">
             <strong>New token (copy now, it will not be shown again):</strong>
             <div class="c-token-box">
                 <span id="token-text" class="c-token-box__value">{{ session('token') }}</span>
                 <button type="button" class="c-btn c-btn--ghost" onclick="copyToken()">Copy</button>
             </div>
-        </div>
+        </x-alert>
     @endif
 
+    <x-card>
     <form method="POST" action="{{ route('admin.tokens.store') }}" class="c-form">
         @csrf
 
@@ -70,8 +65,9 @@
             <button type="submit" class="c-btn c-btn--primary">Create Token</button>
         </div>
     </form>
+    </x-card>
 
-    <section class="c-table-wrap u-mt-3">
+    <x-card class="u-mt-3">
         <table class="c-table">
             <thead>
             <tr>
@@ -98,12 +94,14 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="c-table__muted">No tokens found</td>
+                    <td colspan="4">
+                        <div class="c-empty">No data available</div>
+                    </td>
                 </tr>
             @endforelse
             </tbody>
         </table>
-    </section>
+    </x-card>
 @endsection
 
 @push('scripts')

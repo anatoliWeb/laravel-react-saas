@@ -26,7 +26,8 @@ function FormField({
               <button
                 key={option.value}
                 type="button"
-                className={`form-chip ${isActive ? 'is-active' : ''}`}
+                className={`form-chip ${isActive ? 'is-active' : ''} ${field.disabled ? 'is-disabled' : ''}`}
+                disabled={field.disabled}
                 onClick={() => {
                   let nextValues;
 
@@ -54,6 +55,10 @@ function FormField({
 
   if (field.type === 'permissions') {
     const selectedValues = Array.isArray(value) ? value : [];
+    const roleDerivedPermissions = new Set(field.roleDerivedPermissions || []);
+    const manualPermissions = new Set(field.manualPermissions || []);
+    const removedPermissions = new Set(field.removedPermissions || []);
+    const deniedPermissions = new Set(field.deniedPermissions || []);
     const groupedPermissions = (field.options || []).reduce((acc, option) => {
       const [moduleName = 'general', action = option.label] = String(option.value).split('.');
       if (!acc[moduleName]) {
@@ -80,12 +85,17 @@ function FormField({
               <div className="permission-group__items">
                 {items.map((option) => {
                   const isActive = selectedValues.includes(option.value);
+                  const isRoleDerived = roleDerivedPermissions.has(option.value);
+                  const isManual = manualPermissions.has(option.value);
+                  const isRemoved = removedPermissions.has(option.value);
+                  const isDenied = deniedPermissions.has(option.value);
 
                   return (
                     <button
                       key={option.value}
                       type="button"
-                      className={`permission-toggle ${isActive ? 'is-active' : ''}`}
+                      className={`permission-toggle ${isActive ? 'is-active' : ''} ${isRoleDerived ? 'is-role' : ''} ${isManual ? 'is-manual' : ''} ${isRemoved ? 'is-removed' : ''} ${isDenied ? 'is-denied' : ''} ${field.disabled ? 'is-disabled' : ''}`}
+                      disabled={field.disabled}
                       onClick={() => {
                         const nextValues = isActive
                           ? selectedValues.filter((item) => item !== option.value)
@@ -94,7 +104,6 @@ function FormField({
                         onChange(field.name, nextValues);
                       }}
                     >
-                      <span className="permission-toggle__indicator">{isActive ? 'x' : ''}</span>
                       <span>{option.action}</span>
                     </button>
                   );

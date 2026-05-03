@@ -9,9 +9,9 @@ use Illuminate\Http\Request;
  * Check user permissions.
  *
  * Usage:
- * - permission:manage_users
- * - permission:manage_users|manage_tokens  (any)
- * - permission:manage_users,manage_tokens (all)
+ * - permission:users.view
+ * - permission:users.view|roles.view  (any)
+ * - permission:users.view,users.edit (all)
  */
 class PermissionMiddleware
 {

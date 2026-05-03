@@ -20,10 +20,22 @@ class UserSeeder extends Seeder
          * Permissions
          */
         $permissions = [
+            'access_admin',
             'users.create',
             'users.edit',
             'users.delete',
             'users.view',
+            'roles.view',
+            'roles.create',
+            'roles.edit',
+            'roles.delete',
+            'permissions.view',
+            'permissions.create',
+            'permissions.edit',
+            'permissions.delete',
+            'tokens.view',
+            'tokens.create',
+            'tokens.delete',
         ];
 
         foreach ($permissions as $perm) {
@@ -32,6 +44,11 @@ class UserSeeder extends Seeder
                 ['description' => ucfirst(str_replace('.', ' ', $perm))]
             );
         }
+
+        // WHY:
+        // Permissions use entity.action format for consistency
+        // and easier scaling across modules.
+        Permission::where('name', 'like', 'admin.%')->delete();
 
         /**
          * Roles
@@ -54,7 +71,9 @@ class UserSeeder extends Seeder
         /**
          * Assign permissions to roles
          */
-        // Admin gets full access.
+        // WHY:
+        // Admin must receive full permission set so newly added capabilities
+        // (including roles.* actions) are immediately available in UI and API.
         $adminRole->permissions()->sync(Permission::pluck('id'));
 
         // Manager: can view and edit users.

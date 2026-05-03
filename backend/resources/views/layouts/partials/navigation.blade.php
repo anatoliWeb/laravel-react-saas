@@ -14,35 +14,39 @@
     <nav class="admin-sidebar__nav" aria-label="Sidebar navigation">
         <section class="admin-sidebar__section">
             <h2 class="admin-sidebar__heading">Overview</h2>
-            @if(auth()->user()->hasPermission('users.view'))
+            @can('users.view')
                 <a href="{{ route('admin.dashboard') }}" class="admin-sidebar__link {{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h8V3H3z"/><path d="M13 21h8v-6h-8z"/><path d="M13 3v8h8V3z"/><path d="M3 21h8v-6H3z"/></svg>
                     <span class="admin-sidebar__label">Dashboard</span>
                 </a>
-            @endif
+            @endcan
         </section>
 
         <section class="admin-sidebar__section">
             <h2 class="admin-sidebar__heading">Management</h2>
-            @if(auth()->user()->hasPermission('users.view'))
+            @can('users.view')
                 <a href="{{ route('admin.users.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.users.*') ? 'is-active' : '' }}">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
                     <span class="admin-sidebar__label">Users</span>
                 </a>
+            @endcan
 
+            @can('roles.view')
                 <a href="{{ route('admin.roles.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.roles.*') ? 'is-active' : '' }}">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
                     <span class="admin-sidebar__label">Roles</span>
                 </a>
+            @endcan
 
+            @can('permissions.view')
                 <a href="{{ route('admin.permissions.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.permissions.*') ? 'is-active' : '' }}">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 7v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg>
                     <span class="admin-sidebar__label">Permissions</span>
                 </a>
-            @endif
+            @endcan
         </section>
 
-        @if(auth()->user()->hasPermission('users.view'))
+        @can('tokens.view')
             <section class="admin-sidebar__section">
                 <h2 class="admin-sidebar__heading">API</h2>
                 <a href="{{ route('admin.tokens.index') }}" class="admin-sidebar__link {{ request()->routeIs('admin.tokens.*') ? 'is-active' : '' }}">
@@ -50,7 +54,7 @@
                     <span class="admin-sidebar__label">Tokens</span>
                 </a>
             </section>
-        @endif
+        @endcan
     </nav>
 
     <div class="admin-sidebar__footer">

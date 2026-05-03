@@ -1,6 +1,9 @@
 .c-card {
   @include panel;
-  padding: $space-2;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
 }
 
 .c-card--stat {
@@ -54,6 +57,8 @@
 
 .c-btn--primary {
   background: $color-primary;
+  padding: 10px 16px;
+  border-radius: 8px;
 
   &:hover {
     background: $color-primary-hover;
@@ -61,7 +66,7 @@
 }
 
 .c-btn--danger {
-  background: $color-danger;
+  background: #ef4444;
 
   &:hover {
     background: $color-danger-hover;
@@ -79,21 +84,27 @@
 
 .c-alert {
   border: 1px solid transparent;
-  border-radius: $radius-sm;
-  padding: $space-2;
-  margin-bottom: $space-2;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
 }
 
 .c-alert--success {
-  color: #bbf7d0;
-  background: rgba(34, 197, 94, 0.12);
+  background: rgba(34,197,94,0.1);
+  color: #22c55e;
   border-color: rgba(34, 197, 94, 0.3);
 }
 
 .c-alert--error {
-  color: #fecaca;
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
   border-color: rgba(239, 68, 68, 0.35);
+}
+
+.c-alert--warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
 }
 
 .c-table-wrap {
@@ -107,7 +118,7 @@
 
   th,
   td {
-    padding: 12px 14px;
+    padding: 12px 16px;
     text-align: left;
     font-size: $font-size-md;
   }
@@ -120,7 +131,7 @@
   }
 
   tbody tr {
-    border-bottom: 1px solid rgba(51, 65, 85, 0.65);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
 
   tbody tr:nth-child(even) {
@@ -128,7 +139,7 @@
   }
 
   tbody tr:hover {
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(255,255,255,0.03);
   }
 }
 
@@ -137,9 +148,38 @@
 }
 
 .c-table__actions {
+  // WHY:
+  // Improve visual hierarchy and spacing to make admin UI easier to scan and use.
+  text-align: right;
+}
+
+.c-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  gap: $space-1;
+  gap: 8px;
+}
+
+.c-page-header {
+  // WHY:
+  // Improve visual hierarchy and spacing to make admin UI easier to scan and use.
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.c-page-subtitle {
+  margin-top: 6px;
+  opacity: 0.7;
+}
+
+.c-empty {
+  // WHY:
+  // Unified UI improves usability and reduces cognitive load across admin panel.
+  padding: 16px;
+  text-align: center;
+  color: $color-text-secondary;
 }
 
 .c-token-box {

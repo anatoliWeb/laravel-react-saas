@@ -40,6 +40,13 @@ class UserDTO
     public array $permissions;
 
     /**
+     * Explicitly denied permissions.
+     *
+     * @var array<int, string>
+     */
+    public array $denied_permissions;
+
+    /**
      * Create new UserDTO instance.
      *
      * @param int $id
@@ -47,19 +54,22 @@ class UserDTO
      * @param string $email
      * @param array<int, string> $roles
      * @param array<int, string> $permissions
+     * @param array<int, string> $deniedPermissions
      */
     public function __construct(
         int $id,
         string $name,
         string $email,
         array $roles = [],
-        array $permissions = []
+        array $permissions = [],
+        array $deniedPermissions = []
     ) {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->roles = $roles;
         $this->permissions = $permissions;
+        $this->denied_permissions = $deniedPermissions;
     }
 
     /**
@@ -77,6 +87,7 @@ class UserDTO
             'email' => $this->email,
             'roles' => $this->roles,
             'permissions' => $this->permissions,
+            'denied_permissions' => $this->denied_permissions,
         ];
     }
 }

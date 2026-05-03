@@ -8,6 +8,7 @@ import {
 import MainLayout from '../layouts/MainLayout';
 import DashboardPage from '../pages/DashboardPage';
 import UsersPage from '../pages/UsersPage';
+import TokensPage from '../pages/TokensPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import LoginPage from '../pages/LoginPage';
 import { isAuthenticated } from '../services/authService';
@@ -41,6 +42,7 @@ function AppRouter() {
                 >
                     <Route index element={<DashboardPage />} />
                     <Route path="users" element={<UsersPage />} />
+                    <Route path="tokens" element={<TokensPage />} />
                 </Route>
 
                 {/* Fallback */}

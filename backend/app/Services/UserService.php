@@ -36,6 +36,7 @@ class UserService
             $user->email,
             $user->roles->pluck('name')->values()->all(),
             $user->permissions->pluck('name')->values()->all(),
+            $user->deniedPermissions->pluck('name')->values()->all(),
         );
     }
 
@@ -50,9 +51,9 @@ class UserService
      */
     public function getUsers(): array
     {
-        return User::with(['roles:id,name', 'permissions:id,name'])
+        return User::with(['roles:id,name', 'permissions:id,name', 'deniedPermissions:id,name'])
             ->get()
-            ->map(fn (User $user) => $this->toDto($user)->toArray())
+            ->map(fn (User $user) => $this->toDto($user))
             ->values()
             ->all();
     }
@@ -66,7 +67,7 @@ class UserService
      */
     public function getUser(int $id): UserDTO
     {
-        $user = User::with(['roles:id,name', 'permissions:id,name'])->findOrFail($id);
+        $user = User::with(['roles:id,name', 'permissions:id,name', 'deniedPermissions:id,name'])->findOrFail($id);
         return $this->toDto($user);
     }
 
@@ -79,7 +80,7 @@ class UserService
      */
     public function getById(int $id): array
     {
-        $user = User::with(['roles:id,name', 'permissions:id,name'])->findOrFail($id);
+        $user = User::with(['roles:id,name', 'permissions:id,name', 'deniedPermissions:id,name'])->findOrFail($id);
         return $this->toDto($user)->toArray();
     }
 
@@ -116,10 +117,14 @@ class UserService
             Permission::whereIn('name', $data['permissions'] ?? [])->pluck('id')
         );
 
+        $user->deniedPermissions()->sync(
+            Permission::whereIn('name', $data['denied_permissions'] ?? [])->pluck('id')
+        );
+
         // WHY:
         // Reload relations to return fresh state to API
         return $this->toDto(
-            $user->load('roles:id,name', 'permissions:id,name')
+            $user->load('roles:id,name', 'permissions:id,name', 'deniedPermissions:id,name')
         )->toArray();
     }
 
@@ -134,6 +139,7 @@ class UserService
     public function update(int $id, array $data): array
     {
         $user = User::findOrFail($id);
+        $isSelfUpdate = auth()->id() === $user->id;
 
         // WHY:
         // Build update payload explicitly to avoid mass-assignment issues
@@ -150,18 +156,27 @@ class UserService
 
         $user->update($payload);
 
-        // WHY:
-        // Sync roles to reflect current state exactly
-        $user->roles()->sync($data['roles'] ?? []);
+        if (!$isSelfUpdate) {
+            // WHY:
+            // Sync roles to reflect current state exactly
+            $user->roles()->sync($data['roles'] ?? []);
 
+            // WHY:
+            // Convert permission names to IDs and sync
+            $user->permissions()->sync(
+                Permission::whereIn('name', $data['permissions'] ?? [])->pluck('id')
+            );
+
+            $user->deniedPermissions()->sync(
+                Permission::whereIn('name', $data['denied_permissions'] ?? [])->pluck('id')
+            );
+        }
         // WHY:
-        // Convert permission names to IDs and sync
-        $user->permissions()->sync(
-            Permission::whereIn('name', $data['permissions'] ?? [])->pluck('id')
-        );
+        // Security rule: user must not be able to remove own critical permissions.
+        // Even if frontend is bypassed, backend ignores self-role/self-permission edits.
 
         return $this->toDto(
-            $user->load('roles:id,name', 'permissions:id,name')
+            $user->load('roles:id,name', 'permissions:id,name', 'deniedPermissions:id,name')
         )->toArray();
     }
 

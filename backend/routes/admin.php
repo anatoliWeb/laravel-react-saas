@@ -12,66 +12,120 @@ use App\Http\Controllers\Admin\PermissionController;
  *
  * All routes are:
  * - prefixed with /admin (in bootstrap/app.php)
- * - protected by auth + permission middleware
+ * - protected by auth (in bootstrap/app.php) + permission middleware here
  */
-Route::middleware(['permission:users.view'])
-    ->group(function () {
+Route::group([], function () {
 
         /**
          * Dashboard
          */
-        Route::get('/', [DashboardController::class, 'index'])
-            ->name('dashboard');
+        // WHY:
+        // Routes are grouped by permission to enforce RBAC at route level.
+        Route::middleware('permission:users.view')->group(function (): void {
+            Route::get('/', [DashboardController::class, 'index'])
+                ->name('dashboard');
 
-        /**
-         * Users management
-         */
-        Route::get('/users', [UserController::class, 'index'])
-            ->middleware('permission:users.view')
-            ->name('users.index');
+            /**
+             * Users read access
+             */
+            Route::get('/users', [UserController::class, 'index'])
+                ->name('users.index');
+        });
 
-        Route::get('/users/{id}', [UserController::class, 'edit'])
-            ->middleware('permission:users.edit')
-            ->name('users.edit');
+        Route::middleware('permission:users.create')->group(function (): void {
+            Route::get('/users/create', [UserController::class, 'create'])
+                ->name('users.create');
 
-        Route::put('/users/{id}', [UserController::class, 'update'])
-            ->middleware('permission:users.edit')
-            ->name('users.update');
+            Route::post('/users', [UserController::class, 'store'])
+                ->name('users.store');
+        });
+
+        Route::middleware('permission:users.edit')->group(function (): void {
+            Route::get('/users/{id}', [UserController::class, 'edit'])
+                ->name('users.edit');
+
+            Route::put('/users/{id}', [UserController::class, 'update'])
+                ->name('users.update');
+        });
+
+        Route::middleware('permission:users.delete')->group(function (): void {
+            Route::delete('/users/{id}', [UserController::class, 'destroy'])
+                ->name('users.destroy');
+        });
 
         /**
          * Token management
          */
-        Route::get('/tokens', [TokenController::class, 'index'])
-            ->middleware('permission:users.view')
-            ->name('tokens.index');
+        Route::middleware('permission:tokens.view')->group(function (): void {
+            Route::get('/tokens', [TokenController::class, 'index'])
+                ->name('tokens.index');
+        });
 
-        Route::post('/tokens', [TokenController::class, 'store'])
-            ->middleware('permission:users.edit')
-            ->name('tokens.store');
+        Route::middleware('permission:tokens.create')->group(function (): void {
+            Route::post('/tokens', [TokenController::class, 'store'])
+                ->name('tokens.store');
+        });
 
-        Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
-            ->middleware('permission:users.delete')
-            ->name('tokens.destroy');
+        Route::middleware('permission:tokens.delete')->group(function (): void {
+            Route::delete('/tokens/{id}', [TokenController::class, 'destroy'])
+                ->name('tokens.destroy');
+        });
 
         /**
          * Roles management
          */
-        Route::get('/roles', [RoleController::class, 'index'])
-            ->middleware('permission:users.view')
-            ->name('roles.index');
+        Route::middleware('permission:roles.view')->group(function (): void {
+            Route::get('/roles', [RoleController::class, 'index'])
+                ->name('roles.index');
+        });
 
-        Route::get('/roles/{id}', [RoleController::class, 'edit'])
-            ->middleware('permission:users.edit')
-            ->name('roles.edit');
+        Route::middleware('permission:roles.create')->group(function (): void {
+            Route::get('/roles/create', [RoleController::class, 'create'])
+                ->name('roles.create');
 
-        Route::put('/roles/{id}', [RoleController::class, 'update'])
-            ->middleware('permission:users.edit')
-            ->name('roles.update');
+            Route::post('/roles', [RoleController::class, 'store'])
+                ->name('roles.store');
+        });
+
+        Route::middleware('permission:roles.edit')->group(function (): void {
+            Route::get('/roles/{id}', [RoleController::class, 'edit'])
+                ->name('roles.edit');
+
+            Route::put('/roles/{id}', [RoleController::class, 'update'])
+                ->name('roles.update');
+        });
+
+        Route::middleware('permission:roles.delete')->group(function (): void {
+            Route::delete('/roles/{id}', [RoleController::class, 'destroy'])
+                ->name('roles.destroy');
+        });
 
         /**
          * Permissions management
          */
-        Route::resource('permissions', PermissionController::class)
-            ->middleware('permission:users.edit')
-            ->names('permissions');
-    });
+        Route::middleware('permission:permissions.view')->group(function (): void {
+            Route::get('/permissions', [PermissionController::class, 'index'])
+                ->name('permissions.index');
+        });
+
+        Route::middleware('permission:permissions.create')->group(function (): void {
+            Route::get('/permissions/create', [PermissionController::class, 'create'])
+                ->name('permissions.create');
+
+            Route::post('/permissions', [PermissionController::class, 'store'])
+                ->name('permissions.store');
+        });
+
+        Route::middleware('permission:permissions.edit')->group(function (): void {
+            Route::get('/permissions/{permission}/edit', [PermissionController::class, 'edit'])
+                ->name('permissions.edit');
+
+            Route::put('/permissions/{permission}', [PermissionController::class, 'update'])
+                ->name('permissions.update');
+        });
+
+        Route::middleware('permission:permissions.delete')->group(function (): void {
+            Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])
+                ->name('permissions.destroy');
+        });
+});

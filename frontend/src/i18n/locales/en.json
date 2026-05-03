@@ -51,5 +51,19 @@
     "field_required":  "This field is required",
     "retry": "Retry",
     "validation_error": "Validation error",
-    "unexpected_error": "Something went wrong"
+    "unexpected_error": "Something went wrong",
+    "no_access": "You do not have access to this page",
+    "no_tokens": "No tokens found",
+    "search_tokens": "Search tokens...",
+    "create_token": "Create Token",
+    "creating_token": "Creating token...",
+    "deleting_token": "Deleting token...",
+    "token_owner": "Owner",
+    "created_at": "Created At",
+    "token_value": "Token value (shown once)",
+    "token_created_no_secret": "Token created. Secret value was not returned by API.",
+    "copy_token_now": "Copy your token now. You won't see it again.",
+    "confirm_delete_token": "Are you sure you want to delete this token?",
+    "tokens_refreshing_cached": "Showing cached tokens while refreshing...",
+    "table_refreshing_cached": "Showing cached data while refreshing..."
 }
