@@ -14,6 +14,36 @@ It exists to demonstrate production-style engineering decisions beyond basic CRU
 
 The goal is to showcase how backend and frontend evolve together in a scalable monorepo.
 
+## Why this stack
+
+### Laravel (Backend)
+Laravel was chosen for fast, structured backend delivery without sacrificing maintainability. In this project, it gives us clear layering (Controllers → Services → Models), strong validation, and predictable conventions for both API and Blade admin flows.
+Trade-off: Laravel is heavier than micro-frameworks, but the ecosystem and development speed are a better fit for a SaaS-style codebase.
+
+### React (Frontend)
+React powers a decoupled SPA that consumes the Laravel API cleanly. Reusable UI primitives (tables, modals, forms) keep feature delivery consistent as the admin panel grows.
+Trade-off: SPA complexity is higher than server-rendered views, but we gain better UX, richer interactions, and frontend independence.
+
+### RBAC System
+The access model combines role defaults, direct permissions, and explicit denied permissions. This supports both standard access profiles and edge-case overrides without hardcoding rules per page.
+Trade-off: more logic to manage, but much better flexibility and scalability for real admin workflows.
+
+### Redis + Queues
+Redis-backed queues move non-critical work (for example activity logging) out of request-response flow, keeping API latency stable and enabling future async jobs.
+Trade-off: adds operational components, but improves responsiveness and scalability under load.
+
+### Docker
+Docker gives a reproducible environment for backend, frontend, database, and queue services. It reduces “works on my machine” issues and speeds up onboarding.
+Trade-off: minor local overhead, but much better consistency across dev/CI environments.
+
+### MySQL
+MySQL matches the project’s relational domain: users, roles, permissions, denied-permissions mappings, tokens, and audit logs.
+Trade-off: less flexible than schema-light stores, but stronger consistency for RBAC and transactional data.
+
+### Sanctum (Auth)
+Sanctum provides lightweight token auth suitable for first-party SPA + API architecture and integrates naturally with Laravel middleware.
+Trade-off: for complex third-party OAuth scenarios, other solutions are stronger; for this project, Sanctum is simpler and sufficient.
+
 ## Features
 
 ### Backend

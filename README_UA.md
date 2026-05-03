@@ -1,4 +1,4 @@
-# Laravel + React SaaS Dashboard
+﻿# Laravel + React SaaS Dashboard
 
 Українська документація. Англійська версія: [README.md](./README.md)
 
@@ -6,7 +6,7 @@
 
 Цей проєкт симулює реальну SaaS-архітектуру, де Laravel API обслуговує окремий React SPA фронтенд.
 
-Його мета — показати інженерний підхід рівня production, а не базовий CRUD:
+Його мета — показати engineering-рішення рівня production, а не базовий CRUD:
 - API-first backend із чіткими контрактами
 - RBAC-контроль доступу та permission-aware UI
 - централізоване логування активностей для аудиту
@@ -14,21 +14,51 @@
 
 Проєкт демонструє, як backend і frontend масштабуються разом у monorepo.
 
+## Чому саме цей стек
+
+### Laravel (Backend)
+Laravel обрано за баланс швидкої розробки та структурованої архітектури. У цьому проєкті він дає чіткий поділ на контролери, сервіси та моделі, сильну валідацію й передбачувані конвенції для API і Blade-адмінки.
+Компроміс: Laravel важчий за мікрофреймворки, але екосистема та швидкість розробки краще підходять для SaaS-кодової бази.
+
+### React (Frontend)
+React забезпечує decoupled SPA, що чисто працює з Laravel API. Перевикористовувані UI-примітиви (таблиці, модалки, форми) дозволяють розвивати адмінку послідовно та масштабовано.
+Компроміс: SPA має вищу складність, ніж server-rendered підхід, зате дає кращий UX і незалежність фронтенда.
+
+### RBAC System
+Модель доступу поєднує ролі, прямі дозволи та явні заборони (denied permissions). Це покриває і стандартні профілі доступу, і точкові винятки без хардкоду на кожній сторінці.
+Компроміс: більше логіки в підтримці, але значно краща гнучкість для реальних admin-сценаріїв.
+
+### Redis + Queues
+Черги на Redis виносять не-критичні задачі (наприклад, activity logging) із request-response циклу, зберігаючи стабільну затримку API і готуючи систему до асинхронного масштабування.
+Компроміс: додає операційні компоненти, але покращує чутливість системи та масштабованість.
+
+### Docker
+Docker дає відтворюване середовище для backend, frontend, БД і черг. Це зменшує «works on my machine» проблеми і пришвидшує онбординг.
+Компроміс: невеликий локальний overhead, але значно краща передбачуваність у dev/CI.
+
+### MySQL
+MySQL відповідає реляційній доменній моделі цього проєкту: користувачі, ролі, дозволи, denied-зв’язки, токени, аудиторні логи.
+Компроміс: менша гнучкість порівняно зі schema-light сховищами, але краща консистентність для RBAC і транзакцій.
+
+### Sanctum (Auth)
+Sanctum дає легку token-based автентифікацію для first-party SPA + API та природно інтегрується з middleware Laravel.
+Компроміс: для складних third-party OAuth сценаріїв потрібні інші рішення, але для цього проєкту Sanctum оптимальний.
+
 ## Функціональність
 
 ### Backend
 - API-first архітектура (Laravel)
-- RBAC (ролі та дозволи)
+- RBAC з ролями і дозволами
 - Система логування активностей (service + observers)
-- Валідація вхідних даних через FormRequest
+- Валідація FormRequest для API
 - Service layer для розділення бізнес-логіки
-- Токен-автентифікація через Sanctum
+- Token-auth через Sanctum
 
 ### Frontend
 - React SPA на Vite
 - Захищений і permission-aware рендеринг UI
 - Глобальний loader для async-операцій
-- Модальна форма з обробкою 422 помилок
+- Модальні форми з обробкою 422 помилок валідації
 - Перевикористовуваний DataTable (пошук, сортування, пагінація, дії)
 - i18n підтримка (EN / UK / DE)
 
@@ -37,24 +67,24 @@
 ### Потік запиту
 `Controller -> Service -> Model -> JSON response`
 
-- Контролери містять лише HTTP-рівень.
+- Контролери тримають тільки HTTP-рівень.
 - Сервіси містять бізнес-логіку та правила змін.
 - Моделі відповідають за збереження і зв’язки.
 - FormRequest фіксує вхідні контракти.
 
 ### Розділення відповідальностей
 - Backend API-first і придатний для різних клієнтів.
-- Frontend працює з API через окремі service-модулі.
+- Frontend споживає API через окремі service-модулі.
 - RBAC забезпечується на двох рівнях:
   - backend middleware/authorization (джерело істини)
   - frontend conditional rendering (UX-рівень)
 
 ### Логування активностей
-- `ActivityService` — центральна точка логування.
+- Централізований `ActivityService` — точка входу в логування.
 - Model observers автоматизують логування ключових подій.
-- Dashboard-статистика може використовувати recent activity.
+- Dashboard-статистика може споживати recent activity.
 
-### DTO-підхід
+### Використання DTO
 - DTO-подібне формування відповіді зберігає передбачуваний контракт API для UI.
 
 ## Стек
@@ -77,31 +107,31 @@
 
 ## Безпека
 
-- Токен-автентифікація через Sanctum
-- Хешування паролів стандартним Laravel hashing layer
-- Validation-first стратегія API через FormRequest
+- Token-based автентифікація через Sanctum
+- Хешування паролів через стандартний Laravel hashing layer
+- Validation-first стратегія API через FormRequests
 - RBAC enforcement через permission middleware
-- Frontend приховує заборонені дії, але backend завжди перевіряє авторизацію
-- Захист логіну побудований навколо централізованої auth-логіки і валідації
+- Frontend ховає заборонені дії, але backend завжди перевіряє авторизацію
+- Захист логіну побудований навколо API-валідації та централізованих auth endpoint-ів
 
 ## Розробка
 
-### Frontend
+### Розробка Frontend
 - Код: `frontend/`
-- Entry point: `frontend/src/main.jsx`
+- Точка входу: `frontend/src/main.jsx`
 - API-шар: `frontend/src/services/`
-- i18n-файли: `frontend/src/i18n/locales/`
+- i18n файли: `frontend/src/i18n/locales/`
 
-### Backend
+### Розробка Backend
 - Код: `backend/`
 - API-роути: `backend/routes/api.php`
 - Сервіси: `backend/app/Services/`
-- Request-класи: `backend/app/Http/Requests/`
+- Запити: `backend/app/Http/Requests/`
 
 ### Конфігурація
-- Кореневий `.env` використовується Docker-сервісами
+- Root `.env` використовується Docker-сервісами
 - Приклад backend env: `backend/.env.example`
-- Базовий URL API для frontend: `VITE_API_BASE_URL`
+- Базовий URL API для frontend: `VITE_API_BASE_URL` (у frontend env)
 
 ## Запуск проєкту
 
@@ -124,17 +154,17 @@ docker compose up -d
 4. Відкрити сервіси
 - Frontend: `http://localhost:5173`
 - Backend (Nginx): `http://localhost:8080`
-- API приклад: `http://localhost:8080/api/users`
+- Приклад API: `http://localhost:8080/api/users`
 
 ## Нотатки по середовищу
 
-Сервіси з `docker-compose.yml`:
+Docker-сервіси з `docker-compose.yml`:
 - `backend` (php-fpm)
 - `nginx`
 - `frontend` (Vite dev server)
 - `mysql`
 - `redis`
-- `websocket` (резерв під realtime/dev задачі)
+- `websocket` (резерв для realtime/dev задач)
 
 Важливо:
 - Хост БД всередині контейнерів має відповідати Docker-сервісу (`mysql`).
@@ -143,32 +173,32 @@ docker compose up -d
 
 ## Тестування
 
-У проєкті є feature-тести для критичних backend-сценаріїв (users API, meta, activity logging, auth API).
+Feature-тести покривають критичні backend-флоу (включно з users API, metadata, activity logging, auth-related API checks).
 
 Запуск тестів у backend контейнері:
 ```bash
 docker compose exec -T backend php artisan test
 ```
 
-Локально (якщо встановлено PHP):
+Або локально (якщо встановлено PHP):
 ```bash
 cd backend
 php artisan test
 ```
 
-## Скриншоти
+## Скріншоти
 
 Плейсхолдери (замінити на реальні зображення):
-- Dashboard overview
+- Огляд Dashboard
 - Users DataTable
-- Create/Edit user modal
+- Модалка Create/Edit user
 
 ## Структура проєкту
 
 ```text
 /backend      Laravel API + backend-логіка адмінки
 /frontend     React SPA
-/docker       Dockerfiles та nginx-конфігурація
+/docker       Dockerfiles і nginx-конфігурація
 /docs         Додаткова документація
 TODO.md       Покроковий план розробки
 README.md     Англійська документація
@@ -184,17 +214,17 @@ README_UA.md  Українська документація
 ## Підхід до розробки
 
 - Feature-based commits
-- Невеликі й тестовані кроки з `TODO.md`
-- Чіткі commit messages з ясним scope
+- Невеликі, тестовані кроки з `TODO.md`
+- Чисті commit messages із чітким scope
 
-Приклади:
+Приклади commit-стилю:
 - `feat(users): add roles and permissions sync in API`
 - `fix(frontend): handle users fetch retry and empty states`
 
-## Подальший розвиток
+## Подальші покращення
 
-- Додати повну API документацію (OpenAPI/Swagger)
-- Розширити e2e покриття SPA-сценаріїв
+- Додати повну API-документацію (OpenAPI/Swagger)
+- Розширити end-to-end тестове покриття SPA-флоу
 - Додати фільтрацію/експорт audit-логів
 - Додати CI quality gates (lint + tests + build)
 - Завершити production deployment docs
