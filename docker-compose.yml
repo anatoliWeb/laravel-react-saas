@@ -4,17 +4,13 @@ services:
 
   backend:
     build:
-      context: ./docker/php
+      context: .
+      dockerfile: docker/php/Dockerfile
     container_name: saas_backend
-    working_dir: /var/www/backend
+    working_dir: /var/www
     volumes:
-      - ./backend:/var/www/backend
-    command: >
-      sh -c "
-      chown -R www-data:www-data storage bootstrap/cache &&
-      chmod -R 775 storage bootstrap/cache &&
-      php-fpm
-      "
+      - ./backend:/var/www
+    command: sh /var/www/docker/entrypoint.sh
     env_file:
       - .env
     depends_on:
@@ -23,11 +19,12 @@ services:
 
   queue-worker:
     build:
-      context: ./docker/php
+      context: .
+      dockerfile: docker/php/Dockerfile
     container_name: saas_queue_worker
-    working_dir: /var/www/backend
+    working_dir: /var/www
     volumes:
-      - ./backend:/var/www/backend
+      - ./backend:/var/www
       - ./docker/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
     command: >
       sh -c "
@@ -46,13 +43,15 @@ services:
     ports:
       - "${APP_PORT}:80"
     volumes:
-      - ./backend:/var/www/backend
+      - ./backend:/var/www
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - backend
 
   frontend:
-    image: node:20-alpine
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
     container_name: saas_frontend
     working_dir: /app
     volumes:
@@ -60,7 +59,7 @@ services:
       - /app/node_modules
     ports:
       - "${FRONT_PORT}:5173"
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    command: sh /app/docker/entrypoint.sh
 
   mysql:
     image: mysql:8.0

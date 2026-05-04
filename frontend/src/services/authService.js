@@ -11,7 +11,7 @@ export async function login(email, password) {
         body: JSON.stringify({ email, password }),
     });
 
-    // «бер≥гаЇмо токен у localStorage.
+    // Save token to localStorage
     if (data?.token) {
         localStorage.setItem('token', data.token);
     } else {
