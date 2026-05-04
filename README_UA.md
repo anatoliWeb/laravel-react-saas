@@ -263,6 +263,25 @@ README_UA.md  Українська документація
 - Додати CI quality gates (lint + tests + build)
 - Завершити production deployment docs
 
+## Реліз
+
+Поточний стабільний реліз: **v1.0.0**
+
+Це перша portfolio-ready версія проєкту.
+
+Репозиторій: [Laravel React SaaS](https://github.com/anatoliWeb/laravel-react-saas)
+
+Основне в релізі:
+
+- API-first backend на Laravel
+- React SPA frontend
+- Docker-оточення
+- Токенна авторизація через Sanctum
+- RBAC система з ролями, дозволами та забороненими дозволами
+- Асинхронне логування активності через Redis queue та Supervisor
+- Blade адмін-панель
+- Повна документація проєкту
+
 ## Ліцензія
 
 MIT License. Деталі у [LICENSE](./LICENSE).

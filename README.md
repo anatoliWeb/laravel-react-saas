@@ -263,6 +263,25 @@ Example commit style:
 - Introduce CI quality gates (lint + tests + build)
 - Finalize production deployment docs
 
+## Release
+
+Current stable release: **v1.0.0**
+
+This release represents the first portfolio-ready version of the project.
+
+Repository: [Laravel React SaaS](https://github.com/anatoliWeb/laravel-react-saas)
+
+Release highlights:
+
+- API-first Laravel backend
+- React SPA frontend
+- Docker setup
+- Token-based authentication with Sanctum
+- RBAC with roles, permissions, and denied permissions
+- Async activity logging with Redis queue and Supervisor
+- Blade admin panel
+- Full project documentation
+
 ## License
 
 MIT License. See [LICENSE](./LICENSE).
