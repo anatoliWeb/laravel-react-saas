@@ -18,6 +18,11 @@ function normalizeRoleNames(roles = []) {
   return roles.map((role) => (typeof role === 'string' ? role : role.name)).join(', ');
 }
 
+function readCachedUsers(cacheKey) {
+  const cachedUsers = getCache(cacheKey);
+  return Array.isArray(cachedUsers) ? cachedUsers : [];
+}
+
 /**
  * Users management page.
  *
@@ -26,12 +31,19 @@ function normalizeRoleNames(roles = []) {
  * table state (search/sort/pagination) stable while editing data.
  */
 function UsersPage() {
+  const USERS_CACHE_KEY = 'users_table_rows';
+  const USERS_CACHE_TTL_MS = 60_000;
+  const initialUsers = useMemo(() => readCachedUsers(USERS_CACHE_KEY), []);
+
   const { setTitle, setIsRefreshing } = useHeader();
   const { t } = useTranslation();
   const { showLoading, hideLoading } = useLoading();
 
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // WHY:
+  // Initial state is hydrated from cache to avoid synchronous setState in useEffect
+  // and provide instant UI rendering.
+  const [users, setUsers] = useState(() => initialUsers);
+  const [isLoading, setIsLoading] = useState(() => initialUsers.length === 0);
   const [tableErrorMessage, setTableErrorMessage] = useState(null);
   const [isRefreshingFromCache, setIsRefreshingFromCache] = useState(false);
 
@@ -44,9 +56,7 @@ function UsersPage() {
   // StrictMode can trigger effect twice in development.
   // This guard prevents duplicate initial fetches and noisy UI flicker.
   const hasFetched = useRef(false);
-  const usersRef = useRef([]);
-  const USERS_CACHE_KEY = 'users_table_rows';
-  const USERS_CACHE_TTL_MS = 60_000;
+  const usersRef = useRef(initialUsers);
   const [modalState, setModalState] = useState({ type: null, user: null });
   const [formValues, setFormValues] = useState({ name: '', email: '', password: '', roles: [], permissions: [], denied_permissions: [] });
   const [formErrors, setFormErrors] = useState({});
@@ -57,9 +67,18 @@ function UsersPage() {
   const [manuallyAddedPermissions, setManuallyAddedPermissions] = useState([]);
   const [manuallyRemovedPermissions, setManuallyRemovedPermissions] = useState([]);
   const { meta } = useMeta();
-  const roles = meta?.roles || [];
-  const permissions = meta?.current_user_permissions || [];
-  const availablePermissions = meta?.permissions || [];
+  // WHY:
+  // Wrapping derived arrays in useMemo ensures stable references
+  // and prevents unnecessary re-renders and React hook warnings.
+  const roles = useMemo(() => meta?.roles ?? [], [meta?.roles]);
+  const permissions = useMemo(
+    () => meta?.current_user_permissions ?? [],
+    [meta?.current_user_permissions],
+  );
+  const availablePermissions = useMemo(
+    () => meta?.permissions ?? [],
+    [meta?.permissions],
+  );
   const currentUserId = meta?.current_user?.id ?? null;
   // WHY:
   // Consistent naming improves readability and maintainability across the project.
@@ -116,7 +135,7 @@ function UsersPage() {
       setIsRefreshing(false);
       setIsRefreshingFromCache(false);
     }
-  }, [setIsRefreshing, t]);
+  }, [USERS_CACHE_KEY, USERS_CACHE_TTL_MS, setIsRefreshing, t]);
 
   useEffect(() => {
     if (hasFetched.current) {
@@ -124,20 +143,8 @@ function UsersPage() {
     }
 
     hasFetched.current = true;
-    const cachedUsers = getCache(USERS_CACHE_KEY);
-    if (Array.isArray(cachedUsers) && cachedUsers.length > 0) {
-      // WHY:
-      // Show cached table rows instantly on page revisit, then refresh in background.
-      setUsers(cachedUsers);
-      setIsLoading(false);
-      setIsRefreshingFromCache(true);
-      usersRef.current = cachedUsers;
-      loadUsers({ keepVisibleData: true });
-      return;
-    }
-
-    loadUsers();
-  }, [loadUsers]);
+    loadUsers({ keepVisibleData: initialUsers.length > 0 });
+  }, [initialUsers.length, loadUsers]);
 
   const filteredUsers = useMemo(() => {
     if (!search.trim()) {
@@ -309,6 +316,7 @@ function UsersPage() {
       manuallyRemovedPermissions,
       deniedPermissions,
       isEditingSelf,
+      ALLOW_MULTIPLE_ROLES,
     ],
   );
 

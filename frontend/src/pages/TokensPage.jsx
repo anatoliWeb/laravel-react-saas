@@ -11,6 +11,11 @@ import DataTable from '../components/ui/DataTable/DataTable';
 import Modal from '../components/ui/Modal/Modal';
 import Form from '../components/ui/Form/Form';
 
+function readCachedTokens(cacheKey) {
+  const cachedTokens = getCache(cacheKey);
+  return Array.isArray(cachedTokens) ? cachedTokens : [];
+}
+
 /**
  * Tokens management page.
  *
@@ -18,13 +23,20 @@ import Form from '../components/ui/Form/Form';
  * Tokens UI is permission-controlled to ensure secure API key management.
  */
 function TokensPage() {
+  const TOKENS_CACHE_KEY = 'tokens_list';
+  const TOKENS_CACHE_TTL_MS = 60_000;
+  const initialTokens = useMemo(() => readCachedTokens(TOKENS_CACHE_KEY), []);
+
   const { t } = useTranslation();
   const { setTitle, setIsRefreshing } = useHeader();
   const { showLoading, hideLoading } = useLoading();
   const { meta } = useMeta();
 
-  const [tokens, setTokens] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // WHY:
+  // Initial state is hydrated from cache to avoid synchronous setState in useEffect
+  // and provide instant UI rendering.
+  const [tokens, setTokens] = useState(() => initialTokens);
+  const [isLoading, setIsLoading] = useState(() => initialTokens.length === 0);
   const [tableErrorMessage, setTableErrorMessage] = useState(null);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -34,11 +46,15 @@ function TokensPage() {
   const [createdTokenValue, setCreatedTokenValue] = useState(null);
   const [isRefreshingFromCache, setIsRefreshingFromCache] = useState(false);
   const hasFetched = useRef(false);
-  const tokensRef = useRef([]);
-  const TOKENS_CACHE_KEY = 'tokens_list';
-  const TOKENS_CACHE_TTL_MS = 60_000;
+  const tokensRef = useRef(initialTokens);
 
-  const permissions = meta?.current_user_permissions || [];
+  // WHY:
+  // Wrapping derived arrays in useMemo ensures stable references
+  // and prevents unnecessary re-renders and React hook warnings.
+  const permissions = useMemo(
+    () => meta?.current_user_permissions ?? [],
+    [meta?.current_user_permissions],
+  );
   // WHY:
   // RBAC controls visibility of token actions.
   const canViewTokens = can('tokens.view', meta);
@@ -90,12 +106,9 @@ function TokensPage() {
       setIsRefreshing(false);
       setIsRefreshingFromCache(false);
     }
-  }, [canViewTokens, setIsRefreshing, t]);
+  }, [TOKENS_CACHE_KEY, TOKENS_CACHE_TTL_MS, canViewTokens, setIsRefreshing, t]);
 
   useEffect(() => {
-    // WHY:
-    // Meta is loaded asynchronously, so permissions can be unavailable on first render.
-    // We fetch tokens only after tokens.view becomes available to avoid missing the API call.
     if (!canViewTokens) {
       return;
     }
@@ -105,22 +118,8 @@ function TokensPage() {
     }
 
     hasFetched.current = true;
-
-    const cachedTokens = getCache(TOKENS_CACHE_KEY);
-    if (Array.isArray(cachedTokens) && cachedTokens.length > 0) {
-      // WHY:
-      // Show cached data immediately for fast back-navigation UX,
-      // then revalidate in background to keep data fresh.
-      setTokens(cachedTokens);
-      setIsLoading(false);
-      setIsRefreshingFromCache(true);
-      tokensRef.current = cachedTokens;
-      loadTokens({ keepVisibleData: true });
-      return;
-    }
-
-    loadTokens();
-  }, [canViewTokens, loadTokens]);
+    loadTokens({ keepVisibleData: initialTokens.length > 0 });
+  }, [canViewTokens, initialTokens.length, loadTokens]);
 
   const filteredTokens = useMemo(() => {
     if (!search.trim()) {
@@ -190,7 +189,7 @@ function TokensPage() {
         },
       },
     ];
-  }, [canDeleteToken, hideLoading, showLoading, t]);
+  }, [TOKENS_CACHE_KEY, TOKENS_CACHE_TTL_MS, canDeleteToken, hideLoading, showLoading, t]);
 
   const openCreateModal = () => {
     setFormValues({ name: '' });
