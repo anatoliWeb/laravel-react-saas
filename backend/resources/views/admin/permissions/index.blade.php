@@ -15,7 +15,9 @@
         subtitle="Access control capabilities used by roles and users."
     >
         <x-slot:actions>
-            <a href="{{ route('admin.permissions.create') }}" class="c-btn c-btn--primary">Add Permission</a>
+            @can('permissions.create')
+                <a href="{{ route('admin.permissions.create') }}" class="c-btn c-btn--primary">Add Permission</a>
+            @endcan
         </x-slot:actions>
     </x-page-header>
 
@@ -33,7 +35,16 @@
                         <td>{{ $permission->name }}</td>
                         <td class="c-table__actions">
                             <x-actions>
-                                <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="c-btn c-btn--ghost">Edit</a>
+                                @can('permissions.edit')
+                                    <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="c-btn c-btn--ghost">Edit</a>
+                                @endcan
+                                @can('permissions.delete')
+                                    <form method="POST" action="{{ route('admin.permissions.destroy', $permission->id) }}" onsubmit="return confirm('Delete permission?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="c-btn c-btn--danger">Delete</button>
+                                    </form>
+                                @endcan
                             </x-actions>
                         </td>
                     </tr>

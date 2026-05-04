@@ -188,10 +188,44 @@ php artisan test
 
 ## Screenshots
 
-Placeholders (to be replaced with real images):
-- Dashboard overview
-- Users DataTable
-- Create/Edit user modal
+### Frontend (React SPA)
+
+#### Dashboard
+![Dashboard](docs/screenshots/frontend/dashboard-overview.png)
+
+#### Users Management
+![Users](docs/screenshots/frontend/users-list.png)
+
+#### RBAC Permissions (User Edit)
+![RBAC](docs/screenshots/frontend/users-rbac-edit.png)
+
+#### Tokens Management
+![Tokens](docs/screenshots/frontend/tokens-list.png)
+
+#### Token Creation
+![Create Token](docs/screenshots/frontend/tokens-create-modal.png)
+
+---
+
+### Backend (Blade Admin Panel)
+
+#### Dashboard
+![Admin Dashboard](docs/screenshots/backend/admin-dashboard.png)
+
+#### Users Management
+![Admin Users](docs/screenshots/backend/admin-users-list.png)
+
+#### RBAC (Admin)
+![Admin RBAC](docs/screenshots/backend/admin-users-rbac.png)
+
+#### Roles Management
+![Roles](docs/screenshots/backend/admin-roles.png)
+
+#### Permissions Management
+![Permissions](docs/screenshots/backend/admin-permissions.png)
+
+#### Tokens Management
+![Admin Tokens](docs/screenshots/backend/admin-tokens.png)
 
 ## Project Structure
 

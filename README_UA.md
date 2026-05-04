@@ -188,10 +188,44 @@ php artisan test
 
 ## Скріншоти
 
-Плейсхолдери (замінити на реальні зображення):
-- Огляд Dashboard
-- Users DataTable
-- Модалка Create/Edit user
+### Frontend (React SPA)
+
+#### Панель керування
+![Панель керування](docs/screenshots/frontend/dashboard-overview.png)
+
+#### Користувачі
+![Користувачі](docs/screenshots/frontend/users-list.png)
+
+#### RBAC (редагування користувача)
+![RBAC](docs/screenshots/frontend/users-rbac-edit.png)
+
+#### Токени
+![Токени](docs/screenshots/frontend/tokens-list.png)
+
+#### Створення токена
+![Створення токена](docs/screenshots/frontend/tokens-create-modal.png)
+
+---
+
+### Backend (Адмін-панель Blade)
+
+#### Панель керування
+![Адмін-панель: Dashboard](docs/screenshots/backend/admin-dashboard.png)
+
+#### Користувачі
+![Адмін-панель: Користувачі](docs/screenshots/backend/admin-users-list.png)
+
+#### RBAC
+![Адмін-панель: RBAC](docs/screenshots/backend/admin-users-rbac.png)
+
+#### Ролі
+![Адмін-панель: Ролі](docs/screenshots/backend/admin-roles.png)
+
+#### Дозволи
+![Адмін-панель: Дозволи](docs/screenshots/backend/admin-permissions.png)
+
+#### Токени
+![Адмін-панель: Токени](docs/screenshots/backend/admin-tokens.png)
 
 ## Структура проєкту
 

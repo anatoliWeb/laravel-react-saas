@@ -15,3 +15,15 @@
 - Small commits
 - Clear naming
 - No hardcoded values (use .env)
+---
+
+<!-- WHY:
+Improves developer navigation and onboarding experience.
+-->
+## Related Documentation
+
+- [Architecture](./architecture.md)
+- [API](./api.md)
+- [Commands](./commands.md)
+- [Coding Standards](./coding-standards.md)
+- [Main Docs](./README.md)

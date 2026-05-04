@@ -35,37 +35,39 @@
         </x-alert>
     @endif
 
-    <x-card>
-    <form method="POST" action="{{ route('admin.tokens.store') }}" class="c-form">
-        @csrf
+    @can('tokens.create')
+        <x-card>
+        <form method="POST" action="{{ route('admin.tokens.store') }}" class="c-form">
+            @csrf
 
-        <section class="c-form__section">
-            <div class="c-form__group">
-                <label for="name" class="c-form__label">Token Name</label>
-                <input id="name" type="text" name="name" value="{{ old('name') }}" placeholder="Token name" class="c-form__input">
+            <section class="c-form__section">
+                <div class="c-form__group">
+                    <label for="name" class="c-form__label">Token Name</label>
+                    <input id="name" type="text" name="name" value="{{ old('name') }}" placeholder="Token name" class="c-form__input">
+                </div>
+            </section>
+
+            <section class="c-form__section">
+                <h2 class="c-form__title">Abilities</h2>
+                <div class="c-check-grid">
+                    <label class="c-check">
+                        <input type="checkbox" name="abilities[]" value="read" {{ in_array('read', old('abilities', [])) ? 'checked' : '' }}>
+                        <span>Read</span>
+                    </label>
+
+                    <label class="c-check">
+                        <input type="checkbox" name="abilities[]" value="write" {{ in_array('write', old('abilities', [])) ? 'checked' : '' }}>
+                        <span>Write</span>
+                    </label>
+                </div>
+            </section>
+
+            <div class="c-form__actions">
+                <button type="submit" class="c-btn c-btn--primary">Create Token</button>
             </div>
-        </section>
-
-        <section class="c-form__section">
-            <h2 class="c-form__title">Abilities</h2>
-            <div class="c-check-grid">
-                <label class="c-check">
-                    <input type="checkbox" name="abilities[]" value="read" {{ in_array('read', old('abilities', [])) ? 'checked' : '' }}>
-                    <span>Read</span>
-                </label>
-
-                <label class="c-check">
-                    <input type="checkbox" name="abilities[]" value="write" {{ in_array('write', old('abilities', [])) ? 'checked' : '' }}>
-                    <span>Write</span>
-                </label>
-            </div>
-        </section>
-
-        <div class="c-form__actions">
-            <button type="submit" class="c-btn c-btn--primary">Create Token</button>
-        </div>
-    </form>
-    </x-card>
+        </form>
+        </x-card>
+    @endcan
 
     <x-card class="u-mt-3">
         <table class="c-table">
@@ -85,11 +87,13 @@
                     <td>{{ $token->name }}</td>
                     <td class="c-table__muted">{{ $token->created_at->format('Y-m-d H:i') }}</td>
                     <td class="c-table__actions">
-                        <form method="POST" action="{{ route('admin.tokens.destroy', $token->id) }}" onsubmit="return confirm('Delete this token?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="c-btn c-btn--danger">Delete</button>
-                        </form>
+                        @can('tokens.delete')
+                            <form method="POST" action="{{ route('admin.tokens.destroy', $token->id) }}" onsubmit="return confirm('Delete this token?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="c-btn c-btn--danger">Delete</button>
+                            </form>
+                        @endcan
                     </td>
                 </tr>
             @empty
